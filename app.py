@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # ==============================
-# CSS - 태블릿 최적화
+# CSS - 디자인 최적화 & 세로 깨짐 방지
 # ==============================
 
 st.markdown("""
@@ -71,10 +71,11 @@ st.markdown("""
 }
 
 .metric-value {
-    font-size: 25px;
+    font-size: 24px;
     font-weight: 800;
     color: #18243a;
     margin-top: 6px;
+    white-space: nowrap;
 }
 
 /* 뉴스 */
@@ -98,7 +99,7 @@ st.markdown("""
     margin-top: 8px;
 }
 
-/* 주식 카드 */
+/* 주식 카드 - 세로 쪼개짐 방지 */
 .stock-card {
     background: white;
     border-radius: 20px;
@@ -111,19 +112,25 @@ st.markdown("""
     font-size: 22px;
     font-weight: 800;
     color: #18243a;
+    white-space: nowrap;
+    word-break: keep-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .stock-price {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 800;
     margin-top: 8px;
     color: #18243a;
+    white-space: nowrap;
 }
 
 .stock-info {
     color: #788396;
     font-size: 14px;
     margin-top: 4px;
+    white-space: nowrap;
 }
 
 /* 버튼 */
@@ -243,8 +250,9 @@ NEWS = [
 # 게임 초기화
 # ==============================
 
-def new_game():
-    st.session_state.cash = 1_000_000
+def new_game(start_cash=1_000_000):
+    st.session_state.start_cash = start_cash
+    st.session_state.cash = start_cash
     st.session_state.prices = STOCKS.copy()
     st.session_state.holdings = {stock: 0 for stock in STOCKS}
     st.session_state.turn = 1
@@ -253,11 +261,12 @@ def new_game():
     st.session_state.news = None
     st.session_state.game_over = False
     st.session_state.last_changes = {stock: 0 for stock in STOCKS}
+    st.session_state.price_history = [STOCKS.copy()]
 
 
 # 처음 실행
 if "cash" not in st.session_state:
-    new_game()
+    new_game(1_000_000)
 
 
 # ==============================
@@ -273,7 +282,10 @@ def total_asset():
 
 
 def profit_rate():
-    return (total_asset() - 1_000_000) / 1_000_000 * 100
+    start = st.session_state.get("start_cash", 1_000_000)
+    if start == 0:
+        return 0.0
+    return (total_asset() - start) / start * 100
 
 
 # ==============================
@@ -319,6 +331,7 @@ def apply_news():
         changes[stock] = change
 
     st.session_state.last_changes = changes
+    st.session_state.price_history.append(st.session_state.prices.copy())
 
 
 # ==============================
@@ -398,11 +411,13 @@ if st.session_state.game_over:
     st.write("")
 
     if st.session_state.history:
+        st.markdown('<div class="section-title">자산 변화 추이</div>', unsafe_allow_html=True)
         chart_data = pd.DataFrame({"자산": st.session_state.history})
+        chart_data.index = [f"{i+1}턴" for i in range(len(st.session_state.history))]
         st.line_chart(chart_data, use_container_width=True)
 
     if st.button("새 게임 시작", use_container_width=True):
-        new_game()
+        new_game(st.session_state.start_cash)
         st.rerun()
 
     st.stop()
@@ -472,10 +487,12 @@ for index, stock in enumerate(STOCKS):
                 sell_stock(stock, amount)
                 st.rerun()
 
-# 시장 현황
-st.markdown('<div class="section-title">시장 현황</div>', unsafe_allow_html=True)
-price_df = pd.DataFrame(st.session_state.prices, index=["현재가"]).T
-st.bar_chart(price_df, use_container_width=True)
+# 주가 변동 추이 차트
+st.markdown('<div class="section-title">주가 변동 추이</div>', unsafe_allow_html=True)
+
+history_df = pd.DataFrame(st.session_state.price_history)
+history_df.index = [f"{i}턴" for i in range(len(history_df))]
+st.line_chart(history_df, use_container_width=True)
 
 # 거래 기록
 st.markdown('<div class="section-title">최근 거래</div>', unsafe_allow_html=True)
@@ -486,7 +503,7 @@ if st.session_state.trade_history:
 else:
     st.caption("아직 거래 기록이 없습니다.")
 
-# 턴 진행 및 리셋
+# 턴 진행 및 설정 영역
 st.write("")
 
 if st.button("다음 턴 진행", type="primary", use_container_width=True):
@@ -496,8 +513,19 @@ if st.button("다음 턴 진행", type="primary", use_container_width=True):
 
 st.write("")
 
-if st.button("게임 초기화", use_container_width=True):
-    new_game()
-    st.rerun()
+# 시작 소지금 설정 및 리셋 섹션
+st.markdown('<div class="section-title">게임 설정</div>', unsafe_allow_html=True)
+
+reset_col1, reset_col2 = st.columns([2, 1])
+
+with reset_col1:
+    init_cash = st.number_input("시작 소지금 설정 (원)", min_value=1000, value=st.session_state.get("start_cash", 1_000_000), step=100_000)
+
+with reset_col2:
+    st.write("")
+    st.write("")
+    if st.button("게임 초기화 / 적용", use_container_width=True):
+        new_game(init_cash)
+        st.rerun()
 
 st.caption("※ 이 게임의 주가는 실제 주식 가격이 아닌 랜덤 시뮬레이션입니다.")
