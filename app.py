@@ -99,13 +99,14 @@ st.markdown("""
     margin-top: 8px;
 }
 
-/* 주식 카드 - 세로 쪼개짐 방지 */
+/* 주식 카드 */
 .stock-card {
     background: white;
     border-radius: 20px;
     border: 1px solid #e3e7ee;
     padding: 22px;
     min-height: 220px;
+    margin-bottom: 10px;
 }
 
 .stock-name {
@@ -173,76 +174,37 @@ st.markdown("""
 
 
 # ==============================
-# 게임 데이터
+# 게임 데이터 (종목 추가)
 # ==============================
 
 STOCKS = {
     "삼성전자": 70000,
     "SK하이닉스": 120000,
-    "카카오": 50000
+    "카카오": 50000,
+    "테슬라": 300000,
+    "엔비디아": 180000
 }
 
 NEWS = [
-    {
-        "type": "positive_stock",
-        "title": "삼성전자 신제품 출시 소식",
-        "text": "삼성전자의 새로운 제품이 시장에서 좋은 반응을 얻고 있습니다.",
-        "stock": "삼성전자"
-    },
-    {
-        "type": "positive_stock",
-        "title": "SK하이닉스 반도체 수요 증가",
-        "text": "반도체 시장의 수요가 증가하면서 SK하이닉스에 대한 기대가 높아졌습니다.",
-        "stock": "SK하이닉스"
-    },
-    {
-        "type": "positive_stock",
-        "title": "카카오 신규 서비스 인기",
-        "text": "카카오의 새로운 서비스가 많은 이용자를 확보했습니다.",
-        "stock": "카카오"
-    },
-    {
-        "type": "negative_stock",
-        "title": "삼성전자 실적 전망 하락",
-        "text": "삼성전자의 실적에 대한 시장의 우려가 커지고 있습니다.",
-        "stock": "삼성전자"
-    },
-    {
-        "type": "negative_stock",
-        "title": "SK하이닉스 공급 문제",
-        "text": "반도체 공급 문제로 인해 시장의 불안감이 커지고 있습니다.",
-        "stock": "SK하이닉스"
-    },
-    {
-        "type": "negative_stock",
-        "title": "카카오 규제 우려",
-        "text": "새로운 규제 가능성이 제기되면서 투자자들이 조심스러운 모습을 보이고 있습니다.",
-        "stock": "카카오"
-    },
-    {
-        "type": "general_positive",
-        "title": "국내 증시 상승",
-        "text": "투자 심리가 좋아지면서 전체적인 시장 분위기가 상승세를 보이고 있습니다.",
-        "stock": None
-    },
-    {
-        "type": "general_negative",
-        "title": "국내 증시 하락",
-        "text": "경제에 대한 불안감이 커지면서 전체적인 시장이 하락했습니다.",
-        "stock": None
-    },
-    {
-        "type": "surge",
-        "title": "시장 급등",
-        "text": "강한 매수세가 나타나면서 관련 종목의 주가가 크게 상승했습니다.",
-        "stock": None
-    },
-    {
-        "type": "crash",
-        "title": "시장 급락",
-        "text": "갑작스러운 악재로 시장이 큰 폭으로 하락했습니다.",
-        "stock": None
-    }
+    # 기존 뉴스
+    {"type": "positive_stock", "title": "삼성전자 신제품 출시 소식", "text": "삼성전자의 새로운 제품이 시장에서 좋은 반응을 얻고 있습니다.", "stock": "삼성전자"},
+    {"type": "positive_stock", "title": "SK하이닉스 반도체 수요 증가", "text": "반도체 시장의 수요가 증가하면서 SK하이닉스에 대한 기대가 높아졌습니다.", "stock": "SK하이닉스"},
+    {"type": "positive_stock", "title": "카카오 신규 서비스 인기", "text": "카카오의 새로운 서비스가 많은 이용자를 확보했습니다.", "stock": "카카오"},
+    {"type": "negative_stock", "title": "삼성전자 실적 전망 하락", "text": "삼성전자의 실적에 대한 시장의 우려가 커지고 있습니다.", "stock": "삼성전자"},
+    {"type": "negative_stock", "title": "SK하이닉스 공급 문제", "text": "반도체 공급 문제로 인해 시장의 불안감이 커지고 있습니다.", "stock": "SK하이닉스"},
+    {"type": "negative_stock", "title": "카카오 규제 우려", "text": "새로운 규제 가능성이 제기되면서 투자자들이 조심스러운 모습을 보이고 있습니다.", "stock": "카카오"},
+    
+    # 신규 추가 종목 뉴스 (테슬라, 엔비디아)
+    {"type": "positive_stock", "title": "테슬라 자율주행 기술 대폭 업데이트", "text": "완전 자율주행 성능 향상 소식에 투자자들의 기대감이 치솟고 있습니다.", "stock": "테슬라"},
+    {"type": "negative_stock", "title": "테슬라 배터리 공급망 차질", "text": "원자재 가격 상승과 공급망 문제로 생산량에 차질이 생겼습니다.", "stock": "테슬라"},
+    {"type": "positive_stock", "title": "엔비디아 차세대 AI 칩 독점 공급", "text": "글로벌 빅테크 기업들의 AI 칩 주문이 몰리며 실적 대박이 예상됩니다.", "stock": "엔비디아"},
+    {"type": "negative_stock", "title": "엔비디아 수출 규제 강화 이슈", "text": "글로벌 무역 규제 강화 소식에 핵심 제품 수출에 먹구름이 꼈습니다.", "stock": "엔비디아"},
+
+    # 전반적 시장 뉴스
+    {"type": "general_positive", "title": "국내 증시 상승", "text": "투자 심리가 좋아지면서 전체적인 시장 분위기가 상승세를 보이고 있습니다.", "stock": None},
+    {"type": "general_negative", "title": "국내 증시 하락", "text": "경제에 대한 불안감이 커지면서 전체적인 시장이 하락했습니다.", "stock": None},
+    {"type": "surge", "title": "시장 급등", "text": "강한 매수세가 나타나면서 관련 종목의 주가가 크게 상승했습니다.", "stock": None},
+    {"type": "crash", "title": "시장 급락", "text": "갑작스러운 악재로 시장이 큰 폭으로 하락했습니다.", "stock": None}
 ]
 
 
@@ -264,7 +226,6 @@ def new_game(start_cash=1_000_000):
     st.session_state.price_history = [STOCKS.copy()]
 
 
-# 처음 실행
 if "cash" not in st.session_state:
     new_game(1_000_000)
 
@@ -293,10 +254,7 @@ def profit_rate():
 # ==============================
 
 def generate_news():
-    news = random.choices(
-        NEWS,
-        weights=[4, 4, 4, 5, 5, 5, 3, 5, 3, 5]
-    )[0]
+    news = random.choice(NEWS)
     st.session_state.news = news
 
 
@@ -311,19 +269,19 @@ def apply_news():
 
     for stock in STOCKS:
         if news_type == "positive_stock":
-            change = random.randint(20, 40) if stock == affected else random.randint(-25, 25)
+            change = random.randint(20, 40) if stock == affected else random.randint(-20, 20)
         elif news_type == "negative_stock":
-            change = random.randint(-40, -20) if stock == affected else random.randint(-25, 25)
+            change = random.randint(-40, -20) if stock == affected else random.randint(-20, 20)
         elif news_type == "general_positive":
             change = random.randint(10, 30)
         elif news_type == "general_negative":
             change = random.randint(-30, -10)
         elif news_type == "surge":
-            change = random.randint(40, 60)
+            change = random.randint(30, 50)
         elif news_type == "crash":
-            change = random.randint(-60, -40)
+            change = random.randint(-50, -30)
         else:
-            change = random.randint(-25, 25)
+            change = random.randint(-20, 20)
 
         old_price = st.session_state.prices[stock]
         new_price = max(1000, int(old_price * (1 + change / 100)))
@@ -460,32 +418,34 @@ if st.session_state.news:
 else:
     st.markdown('<div class="news-card"><div class="news-title">아직 뉴스가 없습니다.</div><div class="news-text">첫 번째 턴을 진행해보세요.</div></div>', unsafe_allow_html=True)
 
-# 주식 시장
+# 주식 시장 (5개 종목을 3컬럼 단위로 깔끔하게 정렬)
 st.markdown('<div class="section-title">주식 시장</div>', unsafe_allow_html=True)
 
-columns = st.columns(3)
+stock_items = list(STOCKS.keys())
+rows = [stock_items[i:i + 3] for i in range(0, len(stock_items), 3)]
 
-for index, stock in enumerate(STOCKS):
-    price = st.session_state.prices[stock]
-    change = st.session_state.last_changes[stock]
-    holding = st.session_state.holdings[stock]
+for row in rows:
+    cols = st.columns(len(row))
+    for idx, stock in enumerate(row):
+        price = st.session_state.prices[stock]
+        change = st.session_state.last_changes[stock]
+        holding = st.session_state.holdings[stock]
 
-    with columns[index]:
-        st.markdown(f'<div class="stock-card"><div class="stock-name">{stock}</div><div class="stock-price">₩{price:,}</div><div class="stock-info">변동률 {change:+d}%</div><div class="stock-info" style="margin-top: 15px;">보유량 : {holding:,}주</div></div>', unsafe_allow_html=True)
-        
-        st.write("")
-        amount = st.number_input("수량", min_value=1, value=1, step=1, key=f"amount_{stock}")
+        with cols[idx]:
+            st.markdown(f'<div class="stock-card"><div class="stock-name">{stock}</div><div class="stock-price">₩{price:,}</div><div class="stock-info">변동률 {change:+d}%</div><div class="stock-info" style="margin-top: 15px;">보유량 : {holding:,}주</div></div>', unsafe_allow_html=True)
+            
+            amount = st.number_input("수량", min_value=1, value=1, step=1, key=f"amount_{stock}")
 
-        buy_col, sell_col = st.columns(2)
-        with buy_col:
-            if st.button("매수", key=f"buy_{stock}", use_container_width=True):
-                buy_stock(stock, amount)
-                st.rerun()
+            buy_col, sell_col = st.columns(2)
+            with buy_col:
+                if st.button("매수", key=f"buy_{stock}", use_container_width=True):
+                    buy_stock(stock, amount)
+                    st.rerun()
 
-        with sell_col:
-            if st.button("매도", key=f"sell_{stock}", use_container_width=True):
-                sell_stock(stock, amount)
-                st.rerun()
+            with sell_col:
+                if st.button("매도", key=f"sell_{stock}", use_container_width=True):
+                    sell_stock(stock, amount)
+                    st.rerun()
 
 # 주가 변동 추이 차트
 st.markdown('<div class="section-title">주가 변동 추이</div>', unsafe_allow_html=True)
