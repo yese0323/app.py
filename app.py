@@ -7,14 +7,14 @@ import pandas as pd
 # ==============================
 
 st.set_page_config(
-    page_title="STOCK TYCOON : MOCK TEST",
+    page_title="STOCK TYCOON : HARDCORE EXAM",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # ==============================
-# CSS - 모의고사 스타일 & 대형 뉴스 박스
+# CSS - 고난도 모의고사 스타일
 # ==============================
 
 st.markdown("""
@@ -30,7 +30,7 @@ st.markdown("""
 
 /* 상단 제목 */
 .title-box {
-    background: linear-gradient(135deg, #18243a, #2b3d5b);
+    background: linear-gradient(135deg, #0f172a, #1e293b);
     padding: 28px;
     border-radius: 22px;
     color: white;
@@ -50,7 +50,7 @@ st.markdown("""
 .section-title {
     font-size: 22px;
     font-weight: 800;
-    color: #18243a;
+    color: #0f172a;
     margin-top: 25px;
     margin-bottom: 12px;
 }
@@ -58,48 +58,48 @@ st.markdown("""
 /* 대시보드 카드 */
 .metric-card {
     background: white;
-    border: 1px solid #e3e7ee;
+    border: 1px solid #cbd5e1;
     border-radius: 18px;
     padding: 20px;
     min-height: 110px;
 }
 
 .metric-label {
-    color: #7b8495;
+    color: #64748b;
     font-size: 14px;
 }
 
 .metric-value {
     font-size: 24px;
     font-weight: 800;
-    color: #18243a;
+    color: #0f172a;
     margin-top: 6px;
     white-space: nowrap;
 }
 
-/* 모의고사형 대형 뉴스 카운트다운 박스 */
+/* 모의고사형 불수능 지문 박스 */
 .news-card-large {
     background: #ffffff;
-    border: 2px solid #2b3d5b;
+    border: 2px solid #0f172a;
     border-radius: 20px;
     padding: 30px 35px;
     margin-top: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
 }
 
 .news-badge {
     display: inline-block;
-    background: #18243a;
+    background: #dc2626;
     color: #ffffff;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
     padding: 5px 12px;
     border-radius: 6px;
     margin-bottom: 15px;
 }
 
 .news-title-large {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
     color: #0f172a;
     line-height: 1.4;
@@ -107,22 +107,22 @@ st.markdown("""
 }
 
 .news-text-large {
-    font-size: 16px;
-    color: #334155;
-    line-height: 1.75;
+    font-size: 15px;
+    color: #1e293b;
+    line-height: 1.8;
     background: #f8fafc;
-    padding: 20px;
-    border-left: 4px solid #3b82f6;
+    padding: 22px;
+    border-left: 5px solid #0f172a;
     border-radius: 8px;
     white-space: pre-line;
-    font-family: 'Malgun Gothic', sans-serif;
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
 }
 
 /* 주식 카드 */
 .stock-card {
     background: white;
     border-radius: 20px;
-    border: 1px solid #e3e7ee;
+    border: 1px solid #cbd5e1;
     padding: 22px;
     min-height: 240px;
     margin-bottom: 10px;
@@ -131,21 +131,20 @@ st.markdown("""
 .stock-name {
     font-size: 22px;
     font-weight: 800;
-    color: #18243a;
+    color: #0f172a;
     white-space: nowrap;
-    word-break: keep-all;
 }
 
 .stock-price {
     font-size: 26px;
     font-weight: 800;
     margin-top: 8px;
-    color: #18243a;
+    color: #0f172a;
     white-space: nowrap;
 }
 
 .stock-info {
-    color: #788396;
+    color: #64748b;
     font-size: 14px;
     margin-top: 4px;
     white-space: nowrap;
@@ -155,7 +154,7 @@ st.markdown("""
     background: white;
     border-radius: 22px;
     padding: 30px;
-    border: 1px solid #e3e7ee;
+    border: 1px solid #cbd5e1;
     text-align: center;
 }
 
@@ -174,7 +173,7 @@ st.markdown("""
 @media (max-width: 800px) {
     .block-container { padding: 15px; }
     .title { font-size: 28px; }
-    .news-title-large { font-size: 20px; }
+    .news-title-large { font-size: 19px; }
     .news-text-large { font-size: 14px; }
 }
 </style>
@@ -182,7 +181,7 @@ st.markdown("""
 
 
 # ==============================
-# 모의고사형 고난도 경제 지문 데이터
+# 고난도(불수능) 모의고사 지문 데이터베이스 (트릭 함정 다수)
 # ==============================
 
 STOCKS = {
@@ -195,44 +194,58 @@ STOCKS = {
 
 EXAM_NEWS = [
     {
-        "code": "MOCK-01",
-        "title": "[분석 지문] 중앙은행의 빅컷 단행과 고대역폭 메모리(HBM) 수급 불균형 현상 분석",
-        "text": """미국 연방준비제도(Fed)가 경기 연착륙을 목적으로 시중 기준금리를 50bp 인하하는 '빅컷'을 기습적으로 단행하였다. 이에 따라 시장 전반의 기술주 수급 환경이 개선되는 가운데, 반도체 산업군에서는 차세대 AI 연산 처리에 필수적인 고대역폭 메모리(HBM3E) 공급 부족 사태가 장기화되는 양상이다.
+        "code": "HARD-01 (역발상 고난도)",
+        "title": "[분석 지문] 기준금리 인하 기조 속 시중 유동성 흡수와 대체 투자 재편",
+        "text": """중앙은행이 경기 진작을 위해 기준금리 인하를 발표했으나, 통화당국은 물가 상방 압력을 통제하고자 역레포(Reverse Repo) 금리를 상향 조정하여 시중 단기 유동성을 강하게 흡수하는 상반된 정책을 동시 집행하였다.
 
-특히 주요 AI 서버 제조업체들의 차세대 GPU 출하 스케줄이 당초 계획보다 앞당겨짐에 따라, 글로벌 메모리 반도체 공급망을 전담하고 있는 SK하이닉스의 수혜 폭이 극대화될 것이라는 분석이 지배적이다. 반면 상방 압력을 받던 기타 IT 대형주들은 공급망 유동성 확대에도 불구하고 개별 악재로 상쇄되고 있다.""",
-        "effects": {"SK하이닉스": (25, 45), "삼성전자": (-10, 10), "엔비디아": (15, 30), "카카오": (5, 15), "테슬라": (0, 10)}
+이로 인해 시장 전반에는 금리 인하로 인한 수혜 기대감보다는, 금융권 자금이 위험자산인 IT·플랫폼 부문에서 이탈하여 확실한 고정 채권형 자산으로 이동하는 기이현상이 관측된다. 한편, 고유가 지속으로 리튬·니켈 등 이차전지 원자재 조달 수입 원가가 상쇄된 덕분에 완성차/배터리 제조 단가 둔화 세는 소폭 완화되는 반사이익이 발생하고 있다.""",
+        # 금리인하 호재 착시가 있으나 IT/플랫폼 폭락, 완성차(테슬라) 방어/상승
+        "effects": {"삼성전자": (-25, -10), "SK하이닉스": (-30, -15), "카카오": (-40, -20), "테슬라": (15, 30), "엔비디아": (-20, -5)}
     },
     {
-        "code": "MOCK-02",
-        "title": "[분석 지문] 글로벌 반도체 대중국 수출 규제안 개정과 GPU 파운드리 병목",
-        "text": """미 상무부가 첨단 반도체 기술의 지정학적 리스크 완화를 이유로 대중국 컴퓨팅 파워 연산력 규제 기준(TPP/PD)을 한층 더 강화하였다. 이에 따라 고성능 데이터센터용 AI 가속기의 글로벌 유통 경로가 엄격히 제한될 위기에 직면하였다.
+        "code": "HARD-02 (기술 패러다임)",
+        "title": "[분석 지문] AI 캐펙스(CAPEX) 과잉 투자 회의론과 ASIC 맞춤형 칩 대체 전환",
+        "text": """빅테크 기업들의 AI 인프라 투자(CAPEX) 대비 실질 수익성(ROI) 창출 시점이 연기됨에 따라 글로벌 벤처캐피털을 중심으로 AI 거품론이 제기되었다. 이에 빅테크 기업들은 비싼 범용 GPU 구매를 급격히 줄이고, 자체 설계한 주문형 반도체(ASIC) 생산 비율을 확대하기로 방침을 선회하였다.
 
-이로 인해 텐서 코어 기반 GPU 시장을 독점하다시피 하고 있는 엔비디아의 주요 라인업 출하량이 급감할 것으로 추정되며, 단기 영업이익률 하락이 불가피해졌다. 이와 반대로 반도체 섹터의 전반적 위축 신호는 대체 안전자산 및 플랫폼 관련주로의 단기 수급 이탈 현상을 부추기고 있다.""",
-        "effects": {"엔비디아": (-45, -25), "SK하이닉스": (-20, -5), "카카오": (10, 25), "삼성전자": (-10, 5), "테슬라": (-5, 5)}
+이러한 전환은 범용 GPU 공급망을 독점하던 기업에 극심한 악재로 작용하나, 맞춤형 ASIC 반도체의 위탁 생산(Foundry) 및 메모리 유통을 전담하는 레거시 및 파운드리 대기업에게는 오히려 대규모 대체 수주 기회가 열리고 있다.""",
+        # 엔비디아 급락, 파운드리/레거시 반도체(삼성전자) 급등, 하이닉스 혼조, 테슬라/카카오 영향 소폭
+        "effects": {"엔비디아": (-45, -25), "삼성전자": (20, 40), "SK하이닉스": (-10, 10), "테슬라": (5, 15), "카카오": (-5, 5)}
     },
     {
-        "code": "MOCK-03",
-        "title": "[분석 지문] 자율주행 알고리즘 안전성 심사 승인과 독자 수퍼컴퓨터 데이터센터 가동",
-        "text": """글로벌 주요 연방도로교통안전국(NHTSA)이 라이다(LiDAR) 센서에 의존하지 않는 비전(Vision) 기반 신경망 알고리즘의 완전자율주행(FSD) 상용화 안건을 최종 승인하였다. 이와 더불어 차세대 AI 수퍼컴퓨터 인프라 조성을 위한 자체 서버 가동이 공식적으로 본격화되었다.
+        "code": "HARD-03 (통화 및 환율 함정)",
+        "title": "[분석 지문] 강달러 환율 오버슈팅 및 반덤핑 상계관세 부과 조치",
+        "text": """원/달러 환율이 거시경제 불확실성으로 인해 단기적 오버슈팅 현상을 보이며 급등하였다. 일반적으로 환율 상승은 수출 기업의 가격 경쟁력을 높여 호재로 작용하지만, 미 통상무역위원회(ITC)가 한국산 반도체 부품 및 플랫폼 소프트웨어 수출 품목에 30%에 달하는 기습적 반덤핑 상계관세를 부과하면서 상황이 반전되었다.
 
-자체 플랫폼의 수직 계열화 성공을 발판 삼아 테슬라의 소프트웨어 구독 모델 매출 성장성이 시장 예상치를 대폭 상회할 것으로 진단된다. 해당 호재는 타 전기차/소프트웨어 테마주 대비 해당 기업으로의 폭발적인 매수 쏠림 현상을 유발하고 있다.""",
-        "effects": {"테슬라": (35, 55), "엔비디아": (10, 20), "삼성전자": (-5, 5), "SK하이닉스": (0, 10), "카카오": (-10, 5)}
+반면 환차익으로 인한 매출 착시가 극대화되는 해외 본사 소재 빅테크 기업 및 외화 자산 보유 비율이 높은 글로벌 기업으로 외국인 순매수가 강하게 쏠리는 현상이 나타나고 있다.""",
+        # 국장(삼성, 하이닉스, 카카오) 관세 폭탄 하락, 미장(테슬라, 엔비디아) 환차익 및 쏠림 급등
+        "effects": {"삼성전자": (-25, -10), "SK하이닉스": (-20, -5), "카카오": (-30, -15), "테슬라": (25, 45), "엔비디아": (20, 40)}
     },
     {
-        "code": "MOCK-04",
-        "title": "[분석 지문] 독점규제 및 공정거래에 관한 법률 개정안 및 독점적 플랫폼 과징금 부과",
-        "text": """공정거래위원회가 국내 거대 IT 플랫폼 사업자의 시장지배적 지위 남용 및 자사 우대 행위에 대한 제재 방안으로 집행 가능한 최대 규모의 징벌적 과징금을 부과하고 법적 제재 절차에 착수하였다.
+        "code": "HARD-04 (플랫폼 및 서비스)",
+        "title": "[분석 지문] 생성형 AI 서비스 망사용료 법안 통과 및 망 중립성 완화",
+        "text": """국회 본회의에서 거대 글로벌 콘텐츠 사업자 및 국내 초거대 AI 플랫폼 트래픽 발생 주체에게 고율의 '망 이용 대가' 부담을 의무화하는 법안이 통과되었다. 이번 법안으로 AI 모델 운영에 막대한 서버 데이터 비용이 추가 발생하게 되었다.
 
-이번 법적 리스크는 단기적 비용 증가를 넘어 플랫폼 알고리즘 개편 및 핵심 서비스 수익 모델 훼손이라는 불확실성을 키우고 있다. 이에 따라 카카오를 포함한 국내 주요 IT 플랫폼 상장사 전반에 걸쳐 중장기 밸류에이션 하향 조정(Rerating) 조치가 이어지는 중이다.""",
-        "effects": {"카카오": (-50, -30), "삼성전자": (-5, 5), "SK하이닉스": (-5, 5), "테슬라": (0, 5), "엔비디아": (0, 5)}
+그러나 대형 플랫폼사 중 유일하게 자체 IDC 국산화율이 높은 기업은 망 비용 절감 효과를 입어 독점적 시장 지위를 구축할 것으로 전망된다. 반면 글로벌 빅테크 및 해외 라이벌 기업들은 국내 서비스 운영 비용의 폭발적 증가로 당분간 한국 시장 내 마케팅을 축소할 예정이다.""",
+        # 카카오 반사이익 급등, 글로벌 테크/반도체 단기 위축
+        "effects": {"카카오": (30, 50), "삼성전자": (-5, 5), "SK하이닉스": (-5, 5), "엔비디아": (-20, -5), "테슬라": (-10, 0)}
     },
     {
-        "code": "MOCK-05",
-        "title": "[분석 지문] 파운드리 수율 정상화 진통 및 차세대 2nm 공정 양산 스케줄 지연 이슈",
-        "text": """메모리 사업부의 실적 반등에도 불구하고 글로벌 탑티어 시스템 반도체 파운드리 라인의 수율 개선 속도가 시장의 기대치를 크게 밑돌고 있다. 특히 GAA(Gate-All-Around) 기반 2nm 공정의 테스트 수율 확보 지연으로 빅테크 칩 수주 전선에 경고등이 켜졌다.
+        "code": "HARD-05 (공급망 규제)",
+        "title": "[분석 지문] 자율주행 데이터 안보법 제정과 희토류 수출 통제 보복 조치",
+        "text": """지정학적 갈등 심화로 주요 원자재 수출국이 차량용 핵심 희토류 및 영구자석 수출 제한령을 발효하였다. 이와 함께 글로벌 주요국은 자국 내 도로 주행 데이터의 해외 서버 이전을 엄격히 금지하는 법안을 신설하였다.
 
-이로 인해 종합 반도체 기업(IDM) 구조를 지닌 삼성전자의 시스템 LSI 및 파운드리 부문 적자 폭 확대가 장기화될 위험이 고조되었다. 동종 업계 경쟁사들 대비 상대적 주가 디스카운트 폭이 가파르게 넓어지고 있다.""",
-        "effects": {"삼성전자": (-35, -15), "SK하이닉스": (5, 20), "엔비디아": (-10, 0), "테슬라": (-5, 5), "카카오": (-5, 5)}
+이로 인해 센서 기반 주행 데이터를 글로벌 서버로 수집·학습해야 하는 해외 자율주행 완성차 기업은 데이터 유입 마비와 생산 원가 폭등이라는 이중고에 직면하였다. 한편, 차량용 반도체 대체 수혜 및 내수 플랫폼 기반 데이터 교환 기업은 안전지대로 평가받고 있다.""",
+        # 테슬라 폭락, 엔비디아 하락, 카카오/삼성전자 상대적 반사이익
+        "effects": {"테슬라": (-50, -30), "엔비디아": (-15, -5), "카카오": (15, 30), "삼성전자": (10, 20), "SK하이닉스": (-5, 5)}
+    },
+    {
+        "code": "HARD-06 (기저효과 및 재고)",
+        "title": "[분석 지문] 메모리 반도체 덤핑 재고 소진 완료 및 기저효과 착시",
+        "text": """메모리 반도체 시장의 장기 불황을 이끌었던 악성 재고가 완전 소진되며 DRAM 및 NAND 고정 거래가가 반등하기 시작했다. 그러나 시장 전문가들은 이번 가격 상승이 수요의 폭발적 증가에 의한 것이 아니라, 제조사들의 극단적 감산에 따른 '기저효과'일 뿐이라고 경고한다.
+
+재무구조 개선 효과로 메모리 전업 기업의 주가는 일시적 오버슈팅이 예상되나, 실제 완제품 교체 수요가 뒷받침되지 않아 빅테크 및 시스템 반도체 설계사들의 실적 추정치는 하향 조정되고 있다.""",
+        # SK하이닉스 급등, 삼성전자 상승, 엔비디아/테슬라 하락
+        "effects": {"SK하이닉스": (30, 50), "삼성전자": (10, 25), "엔비디아": (-20, -5), "테슬라": (-15, -5), "카카오": (-5, 5)}
     }
 ]
 
@@ -246,7 +259,7 @@ def new_game(start_cash=1_000_000):
     st.session_state.cash = start_cash
     st.session_state.prices = STOCKS.copy()
     st.session_state.holdings = {stock: 0 for stock in STOCKS}
-    st.session_state.buy_costs = {stock: 0 for stock in STOCKS}  # 평단가용
+    st.session_state.buy_costs = {stock: 0 for stock in STOCKS}
     st.session_state.turn = 1
     st.session_state.history = []
     st.session_state.trade_history = []
@@ -254,7 +267,6 @@ def new_game(start_cash=1_000_000):
     st.session_state.last_changes = {stock: 0 for stock in STOCKS}
     st.session_state.price_history = [STOCKS.copy()]
     
-    # 첫 턴 지문 미리 뽑기
     st.session_state.current_news = random.choice(EXAM_NEWS)
 
 
@@ -315,8 +327,6 @@ def sell_stock(stock, amount):
         return
 
     revenue = price * amount
-    
-    # 평단가 비율 차감
     avg_price = st.session_state.buy_costs[stock] / st.session_state.holdings[stock]
     st.session_state.buy_costs[stock] -= int(avg_price * amount)
     
@@ -326,13 +336,12 @@ def sell_stock(stock, amount):
 
 
 # ==============================
-# 턴 진행 (지문 효과 반영 후 새 지문)
+# 턴 진행
 # ==============================
 
 def next_turn():
     st.session_state.history.append(total_asset())
     
-    # 현재 읽은 모의고사 지문의 주가 영향 반영
     current_effects = st.session_state.current_news["effects"]
     changes = {}
 
@@ -352,7 +361,6 @@ def next_turn():
     if st.session_state.turn > 10:
         st.session_state.game_over = True
     else:
-        # 다음 턴 모의고사 지문 뽑기
         st.session_state.current_news = random.choice(EXAM_NEWS)
 
 
@@ -364,19 +372,19 @@ if st.session_state.game_over:
     asset = total_asset()
     profit = profit_rate()
 
-    if profit >= 50:
-        grade = "S (1등급 - 수석)"
-    elif profit >= 25:
-        grade = "A (2등급 - 우수)"
+    if profit >= 60:
+        grade = "S (상위 0.1% 수능 만점자)"
+    elif profit >= 30:
+        grade = "A (1등급 - 경제 전문가)"
     elif profit >= 10:
-        grade = "B (3등급 - 보통)"
+        grade = "B (2등급 - 우수)"
     elif profit >= 0:
-        grade = "C (4등급 - 미달)"
+        grade = "C (3등급 - 보통)"
     else:
-        grade = "D (5등급 - 과락)"
+        grade = "D (4등급 이하 - 원금 손실)"
 
-    st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">금융/경제 모의고사 결과</div></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="result-card"><h1>수능 모의고사 평가 완료</h1><h2>{grade}</h2><h3>최종 자산</h3><h2>₩{asset:,}</h2><p>수익률 {profit:+.2f}%</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">불수능 경제 지문 모의고사 최종 결과</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="result-card"><h1>평가 완료</h1><h2>{grade}</h2><h3>최종 자산</h3><h2>₩{asset:,}</h2><p>수익률 {profit:+.2f}%</p></div>', unsafe_allow_html=True)
 
     st.write("")
 
@@ -386,7 +394,7 @@ if st.session_state.game_over:
         chart_data.index = [f"{i+1}턴" for i in range(len(st.session_state.history))]
         st.line_chart(chart_data, use_container_width=True)
 
-    if st.button("새 시험 시작", use_container_width=True):
+    if st.button("재시험 시작", use_container_width=True):
         new_game(st.session_state.start_cash)
         st.rerun()
 
@@ -397,8 +405,7 @@ if st.session_state.game_over:
 # 메인 UI
 # ==============================
 
-# 상단 제목
-st.markdown('<div class="title-box"><div class="title">STOCK TYCOON : MOCK TEST</div><div class="subtitle">지문을 정밀 분석하여 시장의 변화를 예측하고 투자하세요.</div></div>', unsafe_allow_html=True)
+st.markdown('<div class="title-box"><div class="title">STOCK TYCOON : HARDCORE EXAM</div><div class="subtitle">지문의 숨겨진 맹점과 트릭을 파악해 실질 수혜 종목을 예측하세요.</div></div>', unsafe_allow_html=True)
 
 # 대시보드
 asset = total_asset()
@@ -423,16 +430,16 @@ st.progress(min(st.session_state.turn / 10, 1.0))
 
 
 # ==============================
-# 모의고사 지문 영역 (대형 박스)
+# 고난도 모의고사 지문
 # ==============================
 
-st.markdown('<div class="section-title">오늘의 분석 지문 (다음 턴 주가에 반영)</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title">오늘의 심화 경제 지문 (분석 후 다음 턴 주가 반영)</div>', unsafe_allow_html=True)
 
 news = st.session_state.current_news
 
 st.markdown(f"""
 <div class="news-card-large">
-    <div class="news-badge">문항 코드: {news['code']}</div>
+    <div class="news-badge">고난도 문항 : {news['code']}</div>
     <div class="news-title-large">{news['title']}</div>
     <div class="news-text-large">{news['text']}</div>
 </div>
@@ -440,7 +447,7 @@ st.markdown(f"""
 
 
 # ==============================
-# 주식 시장 UI (평단가 및 평가 손익 표기)
+# 주식 시장
 # ==============================
 
 st.markdown('<div class="section-title">주식 시장</div>', unsafe_allow_html=True)
@@ -456,7 +463,6 @@ for row in rows:
         holding = st.session_state.holdings[stock]
         buy_cost = st.session_state.buy_costs[stock]
         
-        # 평단가 및 수익률 계산
         if holding > 0:
             avg_price = int(buy_cost / holding)
             stock_profit = ((price - avg_price) / avg_price) * 100
@@ -511,7 +517,7 @@ else:
 # 턴 진행
 st.write("")
 
-if st.button("지문 분석 완료 ➔ 다음 턴으로 주가 반영", type="primary", use_container_width=True):
+if st.button("지문 분석 제출 ➔ 다음 턴 결과 반영", type="primary", use_container_width=True):
     if st.session_state.turn <= 10:
         next_turn()
         st.rerun()
@@ -533,4 +539,4 @@ with reset_col2:
         new_game(init_cash)
         st.rerun()
 
-st.caption("※ 이 게임의 주가는 모의고사 지문 분석에 따라 확률적으로 달라집니다.")
+st.caption("※ 본 시뮬레이션 지문은 다중 유동성/무역 규제 변수가 복합 적용되어 있습니다.")
