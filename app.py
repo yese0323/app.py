@@ -239,7 +239,7 @@ st.markdown("""
 # ==============================
 
 TOTAL_TURNS = 5  # 총 턴 수: 5턴
-TURN_TIME_LIMIT = 60  # 턴당 제한시간: 60초
+TURN_TIME_LIMIT = 30  # 턴당 제한시간: 30초로 변경
 
 STOCKS = {
     "삼성전자": 70000,
@@ -326,7 +326,6 @@ def new_game(start_cash=1_000_000):
     st.session_state.last_changes = {stock: 0 for stock in STOCKS}
     st.session_state.price_history = [STOCKS.copy()]
     
-    # 타이머 초기화 (시작 시간 기록)
     st.session_state.turn_start_time = time.time()
     
     news_deck = EXAM_NEWS_POOL.copy()
@@ -437,7 +436,6 @@ def next_turn():
     st.session_state.price_history.append(st.session_state.prices.copy())
     st.session_state.turn += 1
     
-    # 새로운 턴 시작 시 타이머 시간 재설정
     st.session_state.turn_start_time = time.time()
 
     if st.session_state.turn > TOTAL_TURNS:
@@ -490,18 +488,15 @@ if st.session_state.game_over:
 # 메인 UI (세로 레이아웃 & 타이머)
 # ==============================
 
-st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">5턴 스피드 레이스 - 턴당 제한시간 1분! 시간 종료 시 자동 진행됩니다.</div></div>', unsafe_allow_html=True)
+st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">5턴 스피드 레이스 - 턴당 제한시간 30초! 시간 종료 시 자동 진행됩니다.</div></div>', unsafe_allow_html=True)
 
-# 타이머 남은 시간 계산
 elapsed_time = time.time() - st.session_state.get("turn_start_time", time.time())
 remaining_time = max(0, int(TURN_TIME_LIMIT - elapsed_time))
 
-# 시간이 종료되면 자동 다음 턴 실행
 if remaining_time <= 0:
     next_turn()
     st.rerun()
 
-# 상단 대시보드
 asset = total_asset()
 profit = profit_rate()
 
