@@ -546,17 +546,17 @@ if st.session_state.game_over:
 
     # 🔥 등급 조건 개편 (S >= 60, A >= 30, B >= 15, C >= 0, D >= -10, F < -10)
     if profit >= 60:
-        grade = "S (신의 손 - 전설의 트레이더)"
+        grade = "S (신의 손 - 당신은 도달할 수 없는 곳에 닿았습니다)"
     elif profit >= 30:
-        grade = "A (1등급 - 성공한 트레이더)"
+        grade = "A (1등급 - 하수구에 사는 삐에로가 당신에게 종목을 묻습니다)"
     elif profit >= 15:
-        grade = "B (2등급 - 우수한 성과)"
+        grade = "B (2등급 - 주식..해보실래요?)"
     elif profit >= 0:
-        grade = "C (3등급 - 본전 치기)"
+        grade = "C (3등급 - 노잼 ㅡㅡ)"
     elif profit >= -10:
-        grade = "D (4등급 - 심각한 손실)"
+        grade = "D (4등급 - 돌도 수익률이 0% 인데ㅋ)"
     else:
-        grade = "F (원금 박살 - 깡통 계좌)"
+        grade = "F (박살 - 저기..하수구에 당신 친구가 있어요)"
 
     profit_color = "#ef4444" if profit >= 0 else "#2563eb"
 
