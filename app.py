@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ==============================
-# CSS - 원래 주식 색상 + 커스텀 요소 색상 적용
+# CSS - 디자인 & 색상 맞춤 설정
 # ==============================
 
 st.markdown("""
@@ -205,7 +205,7 @@ st.markdown("""
     margin-top: 5px;
 }
 
-/* ✨ [요청사항 1] 수량, 매수, 매도 버튼 - 배경 검은색 & 글자/테두리 흰색 */
+/* 일반 버튼 (수량, 매수, 매도 등) - 검은 배경 & 흰 글씨 */
 .stButton > button {
     background-color: #000000 !important;
     color: #ffffff !important;
@@ -220,7 +220,17 @@ st.markdown("""
 .stButton > button:hover {
     background-color: #262626 !important;
     color: #ffffff !important;
-    border-color: #ffffff !important;
+}
+
+/* ✨ [요청사항 1] 다음 턴 버튼 - 빨간색 배경 */
+div[data-testid="stButton"] > button[kind="primary"] {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
+    border: 2px solid #b91c1c !important;
+}
+
+div[data-testid="stButton"] > button[kind="primary"]:hover {
+    background-color: #b91c1c !important;
 }
 
 .stNumberInput input {
@@ -233,39 +243,67 @@ st.markdown("""
     border-radius: 10px;
 }
 
-/* 수량 입력창 라벨 도 흰색 배경에 맞게 가독성 강화 */
 .stNumberInput label {
     color: #000000 !important;
     font-weight: 900 !important;
     font-size: 15px !important;
 }
 
-/* ✨ [요청사항 2] 결과 화면 색상 - 검은색 바탕 커스텀 */
-.result-card-dark {
-    background-color: #000000;
-    border: 3px solid #334155;
+/* ✨ [요청사항 2] 결과 화면 - 하얀색 바탕 & 검은색 글씨 */
+.result-card-white {
+    background-color: #ffffff;
+    border: 3px solid #0f172a;
     border-radius: 22px;
     padding: 40px;
     text-align: center;
-    color: #ffffff !important;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    color: #000000 !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
-.result-card-dark h1 { color: #ffffff !important; font-size: 32px; font-weight: 900; margin-bottom: 10px; }
-.result-card-dark h2 { color: #38bdf8 !important; font-size: 36px; font-weight: 900; margin: 15px 0; }
-.result-card-dark h3 { color: #94a3b8 !important; font-size: 20px; font-weight: 700; margin-top: 20px; }
-.result-card-dark .final-asset { color: #facc15 !important; font-size: 40px; font-weight: 900; }
+.result-card-white h1 { 
+    color: #000000 !important; 
+    font-size: 32px; 
+    font-weight: 900; 
+    margin-bottom: 10px; 
+}
 
-@media (max-width: 800px) {
-    .block-container { padding: 15px; }
-    .title { font-size: 28px; }
+.result-card-white h2 { 
+    color: #0284c7 !important; 
+    font-size: 34px; 
+    font-weight: 900; 
+    margin: 15px 0; 
+}
+
+.result-card-white h3 { 
+    color: #475569 !important; 
+    font-size: 20px; 
+    font-weight: 800; 
+    margin-top: 20px; 
+}
+
+.result-card-white .final-asset { 
+    color: #0f172a !important; 
+    font-size: 40px; 
+    font-weight: 900; 
+}
+
+/* 시작 화면 카드 스타일 */
+.start-card {
+    background: white;
+    border: 2px solid #0f172a;
+    border-radius: 22px;
+    padding: 40px;
+    max-width: 600px;
+    margin: 40px auto;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 </style>
 """, unsafe_allow_html=True)
 
 
 # ==============================
-# 게임 데이터 (5턴 스피드 레이스용)
+# 게임 데이터
 # ==============================
 
 TOTAL_TURNS = 5
@@ -340,10 +378,11 @@ FLASH_EVENTS = [
 
 
 # ==============================
-# 게임 초기화
+# 게임 초기화 함수
 # ==============================
 
-def new_game(start_cash=1_000_000):
+def start_game(start_cash):
+    st.session_state.game_started = True
     st.session_state.start_cash = start_cash
     st.session_state.cash = start_cash
     st.session_state.prices = STOCKS.copy()
@@ -365,8 +404,25 @@ def new_game(start_cash=1_000_000):
     st.session_state.flash_event = None
 
 
-if "cash" not in st.session_state:
-    new_game(1_000_000)
+# ✨ [요청사항 3] 맨 처음 자산 입력 화면
+if "game_started" not in st.session_state or not st.session_state.game_started:
+    st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">5턴 스피드 트레이딩 레이스</div></div>', unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div class="start-card">
+        <h2 style="color:#0f172a; font-weight:900; margin-bottom:20px;">🎮 게임 시작 설정</h2>
+        <p style="color:#475569; font-weight:700; font-size:16px;">투자를 시작할 초기 자산을 설정해주세요.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        init_cash = st.number_input("시작 자산 (원)", min_value=100_000, value=1_000_000, step=100_000, format="%d")
+        st.write("")
+        if st.button("🚀 게임 시작하기", type="primary", use_container_width=True):
+            start_game(init_cash)
+            st.rerun()
+    st.stop()
 
 
 # ==============================
@@ -483,7 +539,7 @@ def next_turn():
 
 
 # ==============================
-# ✨ 결과 화면 (검은색 바탕)
+# ✨ [요청사항 2] 결과 화면 (바탕 하얀색 & 검은색 타이틀)
 # ==============================
 
 if st.session_state.game_over:
@@ -506,7 +562,7 @@ if st.session_state.game_over:
     st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">5턴 스피드 레이스 결과</div></div>', unsafe_allow_html=True)
     
     st.markdown(f"""
-    <div class="result-card-dark">
+    <div class="result-card-white">
         <h1>🏆 최종 투자 평가 완료</h1>
         <h2>{grade}</h2>
         <h3>최종 자산</h3>
@@ -526,7 +582,7 @@ if st.session_state.game_over:
         st.line_chart(chart_data, use_container_width=True)
 
     if st.button("다시 도전하기", use_container_width=True):
-        new_game(st.session_state.start_cash)
+        st.session_state.game_started = False
         st.rerun()
 
     st.stop()
@@ -548,7 +604,6 @@ if remaining_time <= 0:
 asset = total_asset()
 profit = profit_rate()
 
-# 원래 수익률 색상 (상승=빨간색, 하락=파란색)
 profit_style = "color:#ef4444;" if profit >= 0 else "color:#2563eb;"
 
 c1, c2, c3, c4, c5 = st.columns([2, 2, 2, 2, 2])
@@ -621,7 +676,6 @@ for row in rows:
         holding = st.session_state.holdings[stock]
         buy_cost = st.session_state.buy_costs[stock]
         
-        # 원래 변동률 색상 (상승=빨강, 하락=파랑)
         change_color = "#ef4444" if change >= 0 else "#2563eb"
         change_sign = "+" if change >= 0 else ""
         
@@ -651,10 +705,8 @@ for row in rows:
             </div>
             """, unsafe_allow_html=True)
             
-            # ✨ [요청사항 1] 수량(검은 배경 + 흰 글자)
             amount = st.number_input("수량", min_value=1, value=1, step=1, key=f"amount_{stock}")
 
-            # ✨ [요청사항 1] 매수 / 매도 (검은 배경 + 흰 글자)
             buy_col, sell_col = st.columns(2)
             with buy_col:
                 if st.button("매수", key=f"buy_{stock}", use_container_width=True):
@@ -682,14 +734,14 @@ if st.session_state.trade_history:
 else:
     st.caption("아직 거래 기록이 없습니다.")
 
-# 수동 다음 턴 진행 버튼
+# ✨ [요청사항 1] 수동 다음 턴 진행 버튼 (빨간색 배경 적용됨)
 st.write("")
 
 if st.button("지문 분석 완료 ➔ 즉시 다음 턴 진행", type="primary", use_container_width=True):
     next_turn()
     st.rerun()
 
-# 게임 종료가 아닐 때만 1초마다 화면 자동 새로고침 진행
+# 게임 진행 중일 때 1초마다 자동 새로고침
 if not st.session_state.game_over:
     time.sleep(1)
     st.rerun()
