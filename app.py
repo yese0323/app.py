@@ -402,6 +402,11 @@ def sell_stock(stock, amount):
 
 def next_turn():
     st.session_state.history.append(total_asset())
+    
+    if st.session_state.turn >= TOTAL_TURNS:
+        st.session_state.game_over = True
+        return
+
     current_effects = st.session_state.current_news["effects"]
     
     # 돌발 이벤트 (기존 확률 유지)
@@ -412,7 +417,7 @@ def next_turn():
     changes = {}
 
     for stock in STOCKS:
-        # 3턴 이상(3, 4, 5턴 반영 시점)일 경우 뉴스 무시하고 무작위 난수 적용
+        # 3턴 이상일 경우 뉴스 무시하고 무작위 난수 적용
         if st.session_state.turn >= 3:
             total_change = random.randint(-25, 25)
         else:
@@ -444,13 +449,10 @@ def next_turn():
     
     st.session_state.turn_start_time = time.time()
 
-    if st.session_state.turn > TOTAL_TURNS:
-        st.session_state.game_over = True
-    else:
-        if not st.session_state.news_deck:
-            st.session_state.news_deck = EXAM_NEWS_POOL.copy()
-            random.shuffle(st.session_state.news_deck)
-        st.session_state.current_news = st.session_state.news_deck.pop()
+    if not st.session_state.news_deck:
+        st.session_state.news_deck = EXAM_NEWS_POOL.copy()
+        random.shuffle(st.session_state.news_deck)
+    st.session_state.current_news = st.session_state.news_deck.pop()
 
 
 # ==============================
@@ -631,10 +633,10 @@ else:
 st.write("")
 
 if st.button("지문 분석 완료 ➔ 즉시 다음 턴 진행", type="primary", use_container_width=True):
-    if st.session_state.turn <= TOTAL_TURNS:
-        next_turn()
-        st.rerun()
+    next_turn()
+    st.rerun()
 
-# 실시간 1초 카운트다운 새로고침용 (주기적 루프)
-time.sleep(1)
-st.rerun()
+# 게임 종료가 아닐 때만 1초마다 화면 자동 새로고침 진행
+if not st.session_state.game_over:
+    time.sleep(1)
+    st.rerun()
