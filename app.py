@@ -15,18 +15,15 @@ st.set_page_config(
 )
 
 # ==============================
-# CSS - 모든 바탕 및 글자 완전 검은색(#000000) 고정
+# CSS - 원래 주식 색상 + 커스텀 요소 색상 적용
 # ==============================
 
 st.markdown("""
 <style>
-/* 기본 전체 글꼴 및 무조건 검은색 강제 적용 */
-* {
-    color: #000000 !important;
-}
-
+/* 기본 배경 및 글자색 */
 .stApp {
-    background-color: #f4f6fa;
+    background-color: #f8fafc;
+    color: #1e293b;
 }
 
 .block-container {
@@ -36,29 +33,29 @@ st.markdown("""
 
 /* 상단 제목 */
 .title-box {
-    background: #e2e8f0;
-    border: 3px solid #000000;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
     padding: 28px;
     border-radius: 22px;
+    color: #ffffff;
     margin-bottom: 20px;
 }
 
 .title {
     font-size: 38px;
     font-weight: 900;
-    color: #000000 !important;
+    color: #ffffff !important;
 }
 
 .subtitle {
     font-size: 16px;
-    font-weight: 800;
-    color: #000000 !important;
+    font-weight: 600;
+    color: #e2e8f0 !important;
 }
 
 .section-title {
     font-size: 22px;
     font-weight: 900;
-    color: #000000 !important;
+    color: #0f172a;
     margin-top: 25px;
     margin-bottom: 12px;
 }
@@ -66,30 +63,30 @@ st.markdown("""
 /* 대시보드 카드 */
 .metric-card {
     background: white;
-    border: 3px solid #000000;
+    border: 2px solid #cbd5e1;
     border-radius: 18px;
     padding: 20px;
     min-height: 110px;
 }
 
 .metric-label {
-    color: #000000 !important;
+    color: #475569;
     font-size: 15px;
-    font-weight: 900;
+    font-weight: 800;
 }
 
 .metric-value {
     font-size: 24px;
     font-weight: 900;
-    color: #000000 !important;
+    color: #0f172a;
     margin-top: 6px;
     white-space: nowrap;
 }
 
-/* 타이머 전용 레드 박스 (글자는 검은색) */
+/* 타이머 박스 */
 .timer-card {
     background: #fef2f2;
-    border: 3px solid #000000;
+    border: 2px solid #ef4444;
     border-radius: 18px;
     padding: 20px;
     min-height: 110px;
@@ -98,63 +95,59 @@ st.markdown("""
 .timer-value {
     font-size: 26px;
     font-weight: 900;
-    color: #000000 !important;
+    color: #dc2626;
     margin-top: 4px;
 }
 
 /* 돌발 특수 이벤트 대형 박스 */
 .flash-event-box-crash {
     background: #fff1f2;
-    border: 3px solid #000000;
+    border: 2px solid #f43f5e;
     border-radius: 20px;
     padding: 22px 28px;
     margin-top: 15px;
     margin-bottom: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
 .flash-badge-crash {
     display: inline-block;
-    background: #e2e8f0;
-    border: 2px solid #000000;
-    color: #000000 !important;
+    background: #e11d48;
+    color: #ffffff !important;
     font-size: 13px;
     font-weight: 900;
     padding: 5px 12px;
     border-radius: 6px;
     margin-bottom: 10px;
-    letter-spacing: 1px;
 }
 
 .flash-title-crash {
     font-size: 22px;
     font-weight: 900;
-    color: #000000 !important;
+    color: #881337;
     margin-bottom: 8px;
 }
 
 .flash-text-crash {
     font-size: 16px;
-    color: #000000 !important;
-    font-weight: 800;
+    color: #4c0519;
+    font-weight: 700;
     line-height: 1.6;
 }
 
 /* 지문 박스 */
 .news-card-large {
     background: #ffffff;
-    border: 3px solid #000000;
+    border: 2px solid #0f172a;
     border-radius: 20px;
     padding: 30px 35px;
     margin-top: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
 }
 
 .news-badge {
     display: inline-block;
-    background: #e2e8f0;
-    border: 2px solid #000000;
-    color: #000000 !important;
+    background: #0f172a;
+    color: #ffffff !important;
     font-size: 14px;
     font-weight: 900;
     padding: 6px 14px;
@@ -165,30 +158,28 @@ st.markdown("""
 .news-title-large {
     font-size: 23px;
     font-weight: 900;
-    color: #000000 !important;
+    color: #0f172a;
     line-height: 1.4;
     margin-bottom: 15px;
 }
 
 .news-text-large {
     font-size: 16px;
-    color: #000000 !important;
-    font-weight: 800;
+    color: #1e293b;
+    font-weight: 700;
     line-height: 1.8;
     background: #f1f5f9;
     padding: 20px;
-    border-left: 6px solid #000000;
-    border: 2px solid #000000;
+    border-left: 6px solid #0f172a;
     border-radius: 8px;
     white-space: pre-line;
-    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
 }
 
 /* 주식 카드 */
 .stock-card {
     background: white;
     border-radius: 20px;
-    border: 3px solid #000000;
+    border: 2px solid #cbd5e1;
     padding: 22px;
     min-height: 230px;
     margin-bottom: 10px;
@@ -197,56 +188,77 @@ st.markdown("""
 .stock-name {
     font-size: 22px;
     font-weight: 900;
-    color: #000000 !important;
-    white-space: nowrap;
+    color: #0f172a;
 }
 
 .stock-price {
     font-size: 26px;
     font-weight: 900;
     margin-top: 8px;
-    color: #000000 !important;
-    white-space: nowrap;
+    color: #0f172a;
 }
 
 .stock-info {
-    color: #000000 !important;
+    color: #475569;
     font-size: 15px;
-    font-weight: 800;
+    font-weight: 700;
     margin-top: 5px;
-    white-space: nowrap;
 }
 
-.result-card {
-    background: white;
-    border-radius: 22px;
-    padding: 30px;
-    border: 3px solid #000000;
-    text-align: center;
-    color: #000000 !important;
-}
-
+/* ✨ [요청사항 1] 수량, 매수, 매도 버튼 - 배경 검은색 & 글자/테두리 흰색 */
 .stButton > button {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
     min-height: 48px;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 900;
-    color: #000000 !important;
-    border: 2px solid #000000 !important;
+    transition: all 0.2s ease;
+}
+
+.stButton > button:hover {
+    background-color: #262626 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
 }
 
 .stNumberInput input {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #000000 !important;
     min-height: 45px;
     font-size: 16px;
     font-weight: 900;
-    color: #000000 !important;
+    border-radius: 10px;
 }
+
+/* 수량 입력창 라벨 도 흰색 배경에 맞게 가독성 강화 */
+.stNumberInput label {
+    color: #000000 !important;
+    font-weight: 900 !important;
+    font-size: 15px !important;
+}
+
+/* ✨ [요청사항 2] 결과 화면 색상 - 검은색 바탕 커스텀 */
+.result-card-dark {
+    background-color: #000000;
+    border: 3px solid #334155;
+    border-radius: 22px;
+    padding: 40px;
+    text-align: center;
+    color: #ffffff !important;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+.result-card-dark h1 { color: #ffffff !important; font-size: 32px; font-weight: 900; margin-bottom: 10px; }
+.result-card-dark h2 { color: #38bdf8 !important; font-size: 36px; font-weight: 900; margin: 15px 0; }
+.result-card-dark h3 { color: #94a3b8 !important; font-size: 20px; font-weight: 700; margin-top: 20px; }
+.result-card-dark .final-asset { color: #facc15 !important; font-size: 40px; font-weight: 900; }
 
 @media (max-width: 800px) {
     .block-container { padding: 15px; }
     .title { font-size: 28px; }
-    .news-title-large { font-size: 18px; }
-    .news-text-large { font-size: 14px; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -256,8 +268,8 @@ st.markdown("""
 # 게임 데이터 (5턴 스피드 레이스용)
 # ==============================
 
-TOTAL_TURNS = 5  # 총 턴 수: 5턴
-TURN_TIME_LIMIT = 30  # 턴당 제한시간: 30초
+TOTAL_TURNS = 5
+TURN_TIME_LIMIT = 30
 
 STOCKS = {
     "삼성전자": 70000,
@@ -415,7 +427,7 @@ def sell_stock(stock, amount):
 
 
 # ==============================
-# 턴 진행 로직 (3턴부터 무작위 변동 적용)
+# 턴 진행 로직
 # ==============================
 
 def next_turn():
@@ -471,7 +483,7 @@ def next_turn():
 
 
 # ==============================
-# 게임 종료 화면
+# ✨ 결과 화면 (검은색 바탕)
 # ==============================
 
 if st.session_state.game_over:
@@ -489,8 +501,21 @@ if st.session_state.game_over:
     else:
         grade = "D (4등급 이하 - 깡통)"
 
+    profit_color = "#ef4444" if profit >= 0 else "#2563eb"
+
     st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">5턴 스피드 레이스 결과</div></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="result-card"><h1>평가 완료</h1><h2>{grade}</h2><h3>최종 자산</h3><h2>₩{asset:,}</h2><p style="font-weight:900; font-size:18px;">수익률 {profit:+.2f}%</p></div>', unsafe_allow_html=True)
+    
+    st.markdown(f"""
+    <div class="result-card-dark">
+        <h1>🏆 최종 투자 평가 완료</h1>
+        <h2>{grade}</h2>
+        <h3>최종 자산</h3>
+        <div class="final-asset">₩{asset:,}</div>
+        <p style="font-weight:900; font-size:22px; color:{profit_color}; margin-top:15px;">
+            수익률 {profit:+.2f}%
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.write("")
 
@@ -508,7 +533,7 @@ if st.session_state.game_over:
 
 
 # ==============================
-# 메인 UI (세로 레이아웃 & 타이머)
+# 메인 UI
 # ==============================
 
 st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">5턴 스피드 레이스 - 턴당 제한시간 30초! 시간 종료 시 자동 진행됩니다.</div></div>', unsafe_allow_html=True)
@@ -523,6 +548,9 @@ if remaining_time <= 0:
 asset = total_asset()
 profit = profit_rate()
 
+# 원래 수익률 색상 (상승=빨간색, 하락=파란색)
+profit_style = "color:#ef4444;" if profit >= 0 else "color:#2563eb;"
+
 c1, c2, c3, c4, c5 = st.columns([2, 2, 2, 2, 2])
 
 with c1:
@@ -532,20 +560,20 @@ with c2:
     st.markdown(f'<div class="metric-card"><div class="metric-label">총 자산</div><div class="metric-value">₩{asset:,}</div></div>', unsafe_allow_html=True)
 
 with c3:
-    st.markdown(f'<div class="metric-card"><div class="metric-label">수익률</div><div class="metric-value">{profit:+.2f}%</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card"><div class="metric-label">수익률</div><div class="metric-value" style="{profit_style}">{profit:+.2f}%</div></div>', unsafe_allow_html=True)
 
 with c4:
     st.markdown(f'<div class="metric-card"><div class="metric-label">현재 턴</div><div class="metric-value">{min(st.session_state.turn, TOTAL_TURNS)} / {TOTAL_TURNS}</div></div>', unsafe_allow_html=True)
 
 with c5:
-    st.markdown(f'<div class="timer-card"><div class="metric-label" style="font-weight:900;">⏱️ 남은 시간</div><div class="timer-value">{remaining_time}초</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="timer-card"><div class="metric-label" style="color:#dc2626; font-weight:800;">⏱️ 남은 시간</div><div class="timer-value">{remaining_time}초</div></div>', unsafe_allow_html=True)
 
 st.write("")
 st.progress(min(st.session_state.turn / TOTAL_TURNS, 1.0))
 
 
 # ==============================
-# 돌발 특수 이벤트 표출
+# 돌발 특수 이벤트
 # ==============================
 
 if st.session_state.flash_event:
@@ -560,7 +588,7 @@ if st.session_state.flash_event:
 
 
 # ==============================
-# 뉴스 지문 표출
+# 뉴스 지문
 # ==============================
 
 st.markdown('<div class="section-title">오늘의 분석 지문 (다음 턴 반영)</div>', unsafe_allow_html=True)
@@ -577,7 +605,7 @@ st.markdown(f"""
 
 
 # ==============================
-# 주식 시장 (세로형 Grid 카드)
+# 주식 시장
 # ==============================
 
 st.markdown('<div class="section-title">주식 시장</div>', unsafe_allow_html=True)
@@ -593,12 +621,18 @@ for row in rows:
         holding = st.session_state.holdings[stock]
         buy_cost = st.session_state.buy_costs[stock]
         
+        # 원래 변동률 색상 (상승=빨강, 하락=파랑)
+        change_color = "#ef4444" if change >= 0 else "#2563eb"
+        change_sign = "+" if change >= 0 else ""
+        
         if holding > 0:
             avg_price = int(buy_cost / holding)
             stock_profit = ((price - avg_price) / avg_price) * 100
+            stock_profit_color = "#ef4444" if stock_profit >= 0 else "#2563eb"
             profit_text = f"수익률: {stock_profit:+.1f}%"
             avg_text = f"평단가: ₩{avg_price:,}"
         else:
+            stock_profit_color = "#64748b"
             profit_text = "수익률: - %"
             avg_text = "평단가: - 원"
 
@@ -607,16 +641,20 @@ for row in rows:
             <div class="stock-card">
                 <div class="stock-name">{stock}</div>
                 <div class="stock-price">₩{price:,}</div>
-                <div class="stock-info">직전 변동률 {change:+d}%</div>
-                <hr style="margin: 10px 0; border:none; border-top:2px solid #000000;">
+                <div class="stock-info" style="color:{change_color}; font-weight:800;">
+                    직전 변동률 {change_sign}{change}%
+                </div>
+                <hr style="margin: 10px 0; border:none; border-top:1px solid #cbd5e1;">
                 <div class="stock-info"><b>보유량:</b> {holding:,}주</div>
                 <div class="stock-info"><b>{avg_text}</b></div>
-                <div class="stock-info" style="font-weight:900;">{profit_text}</div>
+                <div class="stock-info" style="color:{stock_profit_color}; font-weight:800;">{profit_text}</div>
             </div>
             """, unsafe_allow_html=True)
             
+            # ✨ [요청사항 1] 수량(검은 배경 + 흰 글자)
             amount = st.number_input("수량", min_value=1, value=1, step=1, key=f"amount_{stock}")
 
+            # ✨ [요청사항 1] 매수 / 매도 (검은 배경 + 흰 글자)
             buy_col, sell_col = st.columns(2)
             with buy_col:
                 if st.button("매수", key=f"buy_{stock}", use_container_width=True):
