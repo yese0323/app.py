@@ -239,7 +239,7 @@ st.markdown("""
 # ==============================
 
 TOTAL_TURNS = 5  # 총 턴 수: 5턴
-TURN_TIME_LIMIT = 30  # 턴당 제한시간: 30초로 변경
+TURN_TIME_LIMIT = 30  # 턴당 제한시간: 30초
 
 STOCKS = {
     "삼성전자": 70000,
@@ -397,13 +397,14 @@ def sell_stock(stock, amount):
 
 
 # ==============================
-# 턴 진행 로직
+# 턴 진행 로직 (3턴부터 무작위 변동 적용)
 # ==============================
 
 def next_turn():
     st.session_state.history.append(total_asset())
     current_effects = st.session_state.current_news["effects"]
     
+    # 돌발 이벤트 (기존 확률 유지)
     is_flash_triggered = random.random() < 0.20
     flash_data = random.choice(FLASH_EVENTS) if is_flash_triggered else None
     st.session_state.flash_event = flash_data
@@ -411,21 +412,26 @@ def next_turn():
     changes = {}
 
     for stock in STOCKS:
-        if stock in current_effects:
-            min_p, max_p = current_effects[stock]
-            base_change = random.randint(min_p, max_p)
-            if random.random() < 0.15:
-                base_change = -base_change
+        # 3턴 이상(3, 4, 5턴 반영 시점)일 경우 뉴스 무시하고 무작위 난수 적용
+        if st.session_state.turn >= 3:
+            total_change = random.randint(-25, 25)
         else:
-            base_change = random.randint(-6, 6)
-        
-        flash_change = 0
-        if flash_data and stock in flash_data["effects"]:
-            f_min, f_max = flash_data["effects"][stock]
-            flash_change = random.randint(f_min, f_max)
-        
-        noise = random.randint(-2, 2)
-        total_change = base_change + flash_change + noise
+            # 1~2턴은 기존 뉴스 알고리즘대로 정상 작동
+            if stock in current_effects:
+                min_p, max_p = current_effects[stock]
+                base_change = random.randint(min_p, max_p)
+                if random.random() < 0.15:
+                    base_change = -base_change
+            else:
+                base_change = random.randint(-6, 6)
+            
+            flash_change = 0
+            if flash_data and stock in flash_data["effects"]:
+                f_min, f_max = flash_data["effects"][stock]
+                flash_change = random.randint(f_min, f_max)
+            
+            noise = random.randint(-2, 2)
+            total_change = base_change + flash_change + noise
         
         old_price = st.session_state.prices[stock]
         new_price = max(1000, int(old_price * (1 + total_change / 100)))
