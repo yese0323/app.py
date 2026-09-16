@@ -222,7 +222,7 @@ st.markdown("""
     color: #ffffff !important;
 }
 
-/* ✨ [요청사항 1] 다음 턴 버튼 - 빨간색 배경 */
+/* 다음 턴 버튼 - 빨간색 배경 */
 div[data-testid="stButton"] > button[kind="primary"] {
     background-color: #dc2626 !important;
     color: #ffffff !important;
@@ -249,7 +249,7 @@ div[data-testid="stButton"] > button[kind="primary"]:hover {
     font-size: 15px !important;
 }
 
-/* ✨ [요청사항 2] 결과 화면 - 하얀색 바탕 & 검은색 글씨 */
+/* 결과 화면 - 하얀색 바탕 & 검은색 글씨 */
 .result-card-white {
     background-color: #ffffff;
     border: 3px solid #0f172a;
@@ -303,7 +303,7 @@ div[data-testid="stButton"] > button[kind="primary"]:hover {
 
 
 # ==============================
-# 게임 데이터
+# 게임 데이터 (수익률 변동 폭 대폭 상향 🔥)
 # ==============================
 
 TOTAL_TURNS = 5
@@ -324,7 +324,8 @@ EXAM_NEWS_POOL = [
         "text": """중앙은행이 경기 진작을 위해 기준금리 인하를 발표했으나, 통화당국은 물가 상방 압력을 통제하고자 역레포 금리를 상향 조정하여 시중 단기 유동성을 강하게 흡수하는 상반된 정책을 동시 집행하였다.
 
 이로 인해 금융권 자금이 위험자산인 IT·플랫폼 부문에서 이탈하여 고정 채권형 자산으로 이동하고 있다. 한편, 완성차/배터리 제조 단가 둔화 세는 소폭 완화되는 반사이익이 발생하고 있다.""",
-        "effects": {"삼성전자": (-12, -4), "SK하이닉스": (-15, -5), "카카오": (-18, -6), "테슬라": (5, 15)}
+        # 🚀 이전보다 2~3배 확장된 변동률 범위
+        "effects": {"삼성전자": (-35, -15), "SK하이닉스": (-40, -20), "카카오": (-45, -25), "테슬라": (15, 45)}
     },
     {
         "code": "HARD-02 (기술 패러다임)",
@@ -332,7 +333,7 @@ EXAM_NEWS_POOL = [
         "text": """빅테크 기업들의 AI 인프라 투자 대비 실질 수익성 창출 시점이 연기됨에 따라 비싼 범용 GPU 구매를 급격히 줄이고, 자체 설계한 주문형 반도체(ASIC) 생산 비율을 확대하기로 선회하였다.
 
 범용 GPU 공급망을 독점하던 기업에 악재로 작용하나, 맞춤형 ASIC 반도체 위탁 생산(Foundry) 대기업에게는 대체 수주 기회가 열리고 있다.""",
-        "effects": {"엔비디아": (-20, -8), "삼성전자": (8, 20), "SK하이닉스": (-5, 5)}
+        "effects": {"엔비디아": (-50, -20), "삼성전자": (20, 50), "SK하이닉스": (-25, 10)}
     },
     {
         "code": "HARD-03 (통화 및 무역)",
@@ -340,7 +341,7 @@ EXAM_NEWS_POOL = [
         "text": """원/달러 환율이 오버슈팅 현상으로 급등하는 가운데, 미 통상무역위원회가 한국산 반도체 부품 및 플랫폼 소프트웨어 수출 품목에 반덤핑 상계관세를 부과하였다.
 
 반면 환차익이 극대화되는 해외 본사 소재 빅테크 기업으로 외국인 순매수가 강하게 쏠리고 있다.""",
-        "effects": {"삼성전자": (-12, -4), "카카오": (-15, -5), "테슬라": (10, 22), "엔비디아": (8, 18)}
+        "effects": {"삼성전자": (-30, -10), "카카오": (-40, -15), "테슬라": (20, 55), "엔비디아": (15, 45)}
     },
     {
         "code": "HARD-04 (안보 및 규제)",
@@ -348,31 +349,31 @@ EXAM_NEWS_POOL = [
         "text": """주요 원자재 수출국이 차량용 핵심 희토류 수출 제한령을 발효하고, 자국의 도로 주행 데이터 해외 서버 이전을 엄격히 금지하였다.
 
 이로 인해 글로벌 자율주행 완성차 기업은 데이터 유입 마비와 생산 원가 상승이라는 이중고에 직면하였다.""",
-        "effects": {"테슬라": (-22, -10), "엔비디아": (-8, -2), "카카오": (5, 12)}
+        "effects": {"테슬라": (-50, -25), "엔비디아": (-25, -5), "카카오": (10, 35)}
     },
     {
         "code": "HARD-05 (재고 및 기저효과)",
         "title": "[분석 지문] 메모리 반도체 덤핑 재고 소진 완료와 착시 효과",
         "text": """장기 불황을 이끌었던 메모리 반도체 재고가 감산 정책으로 소진되며 고정 거래가가 반등하였다. 다만 이는 소비 폭증이 아닌 공급 통제에 따른 수급 개선 효과이다.""",
-        "effects": {"SK하이닉스": (12, 25), "삼성전자": (5, 15), "엔비디아": (-10, -2)}
+        "effects": {"SK하이닉스": (25, 60), "삼성전자": (15, 40), "엔비디아": (-25, -5)}
     }
 ]
 
 FLASH_EVENTS = [
     {
-        "title": "💥 [돌발 악재] 지정학적 리스크 및 원자재 수송 차질",
-        "text": "주요 수송로 봉쇄 우려로 금융 시장 매수세가 위축되며 전 종목 주가가 하락 압력을 받습니다.",
-        "effects": {"삼성전자": (-20, -8), "SK하이닉스": (-22, -10), "카카오": (-25, -12), "테슬라": (-18, -6), "엔비디아": (-20, -8)}
+        "title": "💥 [돌발 대폭락] 지정학적 리스크 및 원자재 수송 차질",
+        "text": "주요 수송로 봉쇄 우려로 금융 시장 매수세가 완전히 실종되며 전 종목 주가가 궤멸적인 하락 압력을 받습니다.",
+        "effects": {"삼성전자": (-45, -20), "SK하이닉스": (-45, -20), "카카오": (-50, -25), "테슬라": (-35, -15), "엔비디아": (-40, -20)}
     },
     {
         "title": "📉 [돌발 악재] 글로벌 투자은행 자산 매각 공시",
-        "text": "대형 운용사의 자금 회수용 강제 매물이 쏟아지며 주요 종목 주가가 일시 하락합니다.",
-        "effects": {"삼성전자": (-15, -5), "SK하이닉스": (-18, -6), "카카오": (-20, -8), "테슬라": (-15, -5), "엔비디아": (-18, -6)}
+        "text": "대형 운용사의 자금 회수용 강제 매물이 쏟아지며 주요 종목 주가가 폭락합니다.",
+        "effects": {"삼성전자": (-30, -10), "SK하이닉스": (-35, -15), "카카오": (-40, -15), "테슬라": (-30, -10), "엔비디아": (-35, -15)}
     },
     {
-        "title": "🚀 [돌발 호재] 중동 국부펀드 글로벌 테크 수급 유입",
-        "text": "대규모 자산 재배분 결정으로 보유 종목 전반에 강력한 매수세가 들어옵니다.",
-        "effects": {"삼성전자": (8, 20), "SK하이닉스": (10, 22), "카카오": (6, 18), "테슬라": (12, 25), "엔비디아": (15, 28)}
+        "title": "🚀 [돌발 대떡상] 중동 국부펀드 글로벌 테크 수급 폭풍 유입",
+        "text": "대규모 자산 재배분 결정으로 보유 종목 전반에 상한가 기세를 이끄는 강력한 매수세가 들어옵니다.",
+        "effects": {"삼성전자": (20, 50), "SK하이닉스": (25, 55), "카카오": (15, 45), "테슬라": (30, 60), "엔비디아": (35, 65)}
     }
 ]
 
@@ -404,7 +405,7 @@ def start_game(start_cash):
     st.session_state.flash_event = None
 
 
-# ✨ [요청사항 3] 맨 처음 자산 입력 화면
+# 시작 자산 입력 화면
 if "game_started" not in st.session_state or not st.session_state.game_started:
     st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">5턴 스피드 트레이딩 레이스</div></div>', unsafe_allow_html=True)
     
@@ -483,7 +484,7 @@ def sell_stock(stock, amount):
 
 
 # ==============================
-# 턴 진행 로직
+# 턴 진행 로직 (수익률 변동 강화 적용)
 # ==============================
 
 def next_turn():
@@ -495,31 +496,33 @@ def next_turn():
 
     current_effects = st.session_state.current_news["effects"]
     
-    is_flash_triggered = random.random() < 0.20
+    is_flash_triggered = random.random() < 0.25
     flash_data = random.choice(FLASH_EVENTS) if is_flash_triggered else None
     st.session_state.flash_event = flash_data
 
     changes = {}
 
     for stock in STOCKS:
-        if st.session_state.turn >= 3:
-            total_change = random.randint(-25, 25)
+        # 뉴스 영향 기반 계산
+        if stock in current_effects:
+            min_p, max_p = current_effects[stock]
+            base_change = random.randint(min_p, max_p)
+            # 10% 확률로 예상과 반대로 튀는 반전 노이즈
+            if random.random() < 0.10:
+                base_change = -base_change
         else:
-            if stock in current_effects:
-                min_p, max_p = current_effects[stock]
-                base_change = random.randint(min_p, max_p)
-                if random.random() < 0.15:
-                    base_change = -base_change
-            else:
-                base_change = random.randint(-6, 6)
-            
-            flash_change = 0
-            if flash_data and stock in flash_data["effects"]:
-                f_min, f_max = flash_data["effects"][stock]
-                flash_change = random.randint(f_min, f_max)
-            
-            noise = random.randint(-2, 2)
-            total_change = base_change + flash_change + noise
+            base_change = random.randint(-15, 15)
+        
+        # 돌발 이벤트 영향 추가
+        flash_change = 0
+        if flash_data and stock in flash_data["effects"]:
+            f_min, f_max = flash_data["effects"][stock]
+            flash_change = random.randint(f_min, f_max)
+        
+        # 시장 기본 변동 노이즈 확대 (-5% ~ +5%)
+        noise = random.randint(-5, 5)
+        
+        total_change = base_change + flash_change + noise
         
         old_price = st.session_state.prices[stock]
         new_price = max(1000, int(old_price * (1 + total_change / 100)))
@@ -539,18 +542,18 @@ def next_turn():
 
 
 # ==============================
-# ✨ [요청사항 2] 결과 화면 (바탕 하얀색 & 검은색 타이틀)
+# 결과 화면 (하얀색 바탕 & 검은색 타이틀)
 # ==============================
 
 if st.session_state.game_over:
     asset = total_asset()
     profit = profit_rate()
 
-    if profit >= 30:
-        grade = "S (스피드 타짜)"
-    elif profit >= 15:
+    if profit >= 50:
+        grade = "S (스피드 타짜 - 신의 손)"
+    elif profit >= 25:
         grade = "A (1등급 - 성공한 트레이더)"
-    elif profit >= 5:
+    elif profit >= 10:
         grade = "B (2등급 - 우수)"
     elif profit >= 0:
         grade = "C (3등급 - 원금 보존)"
@@ -734,7 +737,7 @@ if st.session_state.trade_history:
 else:
     st.caption("아직 거래 기록이 없습니다.")
 
-# ✨ [요청사항 1] 수동 다음 턴 진행 버튼 (빨간색 배경 적용됨)
+# 다음 턴 진행 버튼 (빨간색 배경)
 st.write("")
 
 if st.button("지문 분석 완료 ➔ 즉시 다음 턴 진행", type="primary", use_container_width=True):
