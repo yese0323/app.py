@@ -1,20 +1,21 @@
 import streamlit as st
 import random
 import pandas as pd
+import time
 
 # ==============================
 # 기본 설정
 # ==============================
 
 st.set_page_config(
-    page_title="STOCK TYCOON : REALISTIC MARKET",
+    page_title="STOCK TYCOON : 5-TURN SPEED GAME",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # ==============================
-# CSS - 세로형 레이아웃 전용 스타일
+# CSS - 세로형 레이아웃 및 타이머 스타일
 # ==============================
 
 st.markdown("""
@@ -77,7 +78,23 @@ st.markdown("""
     white-space: nowrap;
 }
 
-/* 돌발 특수 이벤트 대형 박스 (폭락/급등 전용) */
+/* 타이머 전용 레드 박스 */
+.timer-card {
+    background: #fef2f2;
+    border: 2px solid #ef4444;
+    border-radius: 18px;
+    padding: 20px;
+    min-height: 110px;
+}
+
+.timer-value {
+    font-size: 26px;
+    font-weight: 900;
+    color: #dc2626;
+    margin-top: 4px;
+}
+
+/* 돌발 특수 이벤트 대형 박스 */
 .flash-event-box-crash {
     background: #fef2f2;
     border: 3px solid #ef4444;
@@ -218,8 +235,11 @@ st.markdown("""
 
 
 # ==============================
-# 게임 데이터 (완화된 변동 범위 적용)
+# 게임 데이터 (5턴 스피드 레이스용)
 # ==============================
+
+TOTAL_TURNS = 5  # 총 턴 수: 5턴
+TURN_TIME_LIMIT = 60  # 턴당 제한시간: 60초
 
 STOCKS = {
     "삼성전자": 70000,
@@ -229,7 +249,6 @@ STOCKS = {
     "엔비디아": 180000
 }
 
-# 뉴스 데이터베이스 (중복 없이 순차 추출)
 EXAM_NEWS_POOL = [
     {
         "code": "HARD-01 (유동성 재편)",
@@ -268,16 +287,9 @@ EXAM_NEWS_POOL = [
         "title": "[분석 지문] 메모리 반도체 덤핑 재고 소진 완료와 착시 효과",
         "text": """장기 불황을 이끌었던 메모리 반도체 재고가 감산 정책으로 소진되며 고정 거래가가 반등하였다. 다만 이는 소비 폭증이 아닌 공급 통제에 따른 수급 개선 효과이다.""",
         "effects": {"SK하이닉스": (12, 25), "삼성전자": (5, 15), "엔비디아": (-10, -2)}
-    },
-    {
-        "code": "HARD-06 (망사용료 법안)",
-        "title": "[분석 지문] 초거대 AI 망사용료 의무화 통과 및 IDC 차별화",
-        "text": """국회 본회의에서 트래픽 다량 발생 기업 대상 망 이용 대가 부과 법안이 통과되었다. 자체 인프라 효율성이 높은 국내 플랫폼이 비용을 방어할 것으로 전망된다.""",
-        "effects": {"카카오": (12, 25), "엔비디아": (-10, -2), "테슬라": (-5, 0)}
     }
 ]
 
-# 돌발 이벤트 (범위 무작위 방식 적용)
 FLASH_EVENTS = [
     {
         "title": "💥 [돌발 악재] 지정학적 리스크 및 원자재 수송 차질",
@@ -314,11 +326,12 @@ def new_game(start_cash=1_000_000):
     st.session_state.last_changes = {stock: 0 for stock in STOCKS}
     st.session_state.price_history = [STOCKS.copy()]
     
-    # 중복 방지를 위해 뉴스 덱을 새로 섞음
+    # 타이머 초기화 (시작 시간 기록)
+    st.session_state.turn_start_time = time.time()
+    
     news_deck = EXAM_NEWS_POOL.copy()
     random.shuffle(news_deck)
     st.session_state.news_deck = news_deck
-    
     st.session_state.current_news = st.session_state.news_deck.pop()
     st.session_state.flash_event = None
 
@@ -390,10 +403,8 @@ def sell_stock(stock, amount):
 
 def next_turn():
     st.session_state.history.append(total_asset())
-    
     current_effects = st.session_state.current_news["effects"]
     
-    # 20% 확률로 돌발 특수 이벤트 발동
     is_flash_triggered = random.random() < 0.20
     flash_data = random.choice(FLASH_EVENTS) if is_flash_triggered else None
     st.session_state.flash_event = flash_data
@@ -401,27 +412,20 @@ def next_turn():
     changes = {}
 
     for stock in STOCKS:
-        # 1. 지문 효과 범위 내 무작위 정수 추출
         if stock in current_effects:
             min_p, max_p = current_effects[stock]
             base_change = random.randint(min_p, max_p)
-            
-            # 15% 확률로 역발상 차익실현 장세 (반대 변동)
             if random.random() < 0.15:
                 base_change = -base_change
         else:
-            # 지문 미언급 종목 독립 변동 (±6%)
             base_change = random.randint(-6, 6)
         
-        # 2. 돌발 이벤트 범위 내 무작위 정수 추출
         flash_change = 0
         if flash_data and stock in flash_data["effects"]:
             f_min, f_max = flash_data["effects"][stock]
             flash_change = random.randint(f_min, f_max)
         
-        # 3. 시장 오차 잡음 (±2%)
         noise = random.randint(-2, 2)
-        
         total_change = base_change + flash_change + noise
         
         old_price = st.session_state.prices[stock]
@@ -432,11 +436,13 @@ def next_turn():
     st.session_state.last_changes = changes
     st.session_state.price_history.append(st.session_state.prices.copy())
     st.session_state.turn += 1
+    
+    # 새로운 턴 시작 시 타이머 시간 재설정
+    st.session_state.turn_start_time = time.time()
 
-    if st.session_state.turn > 10:
+    if st.session_state.turn > TOTAL_TURNS:
         st.session_state.game_over = True
     else:
-        # 중복 없는 뉴스 소진 시 재장전
         if not st.session_state.news_deck:
             st.session_state.news_deck = EXAM_NEWS_POOL.copy()
             random.shuffle(st.session_state.news_deck)
@@ -451,9 +457,9 @@ if st.session_state.game_over:
     asset = total_asset()
     profit = profit_rate()
 
-    if profit >= 50:
-        grade = "S (전설의 타짜)"
-    elif profit >= 20:
+    if profit >= 30:
+        grade = "S (스피드 타짜)"
+    elif profit >= 15:
         grade = "A (1등급 - 성공한 트레이더)"
     elif profit >= 5:
         grade = "B (2등급 - 우수)"
@@ -462,7 +468,7 @@ if st.session_state.game_over:
     else:
         grade = "D (4등급 이하 - 깡통)"
 
-    st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">최종 시뮬레이션 결과</div></div>', unsafe_allow_html=True)
+    st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">5턴 스피드 레이스 결과</div></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="result-card"><h1>평가 완료</h1><h2>{grade}</h2><h3>최종 자산</h3><h2>₩{asset:,}</h2><p>수익률 {profit:+.2f}%</p></div>', unsafe_allow_html=True)
 
     st.write("")
@@ -473,7 +479,7 @@ if st.session_state.game_over:
         chart_data.index = [f"{i+1}턴" for i in range(len(st.session_state.history))]
         st.line_chart(chart_data, use_container_width=True)
 
-    if st.button("재시험 시작", use_container_width=True):
+    if st.button("다시 도전하기", use_container_width=True):
         new_game(st.session_state.start_cash)
         st.rerun()
 
@@ -481,16 +487,25 @@ if st.session_state.game_over:
 
 
 # ==============================
-# 메인 UI (세로 레이아웃)
+# 메인 UI (세로 레이아웃 & 타이머)
 # ==============================
 
-st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">지문 분석과 현실적인 시장 변동을 기반으로 최적의 투자를 실행하세요.</div></div>', unsafe_allow_html=True)
+st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">5턴 스피드 레이스 - 턴당 제한시간 1분! 시간 종료 시 자동 진행됩니다.</div></div>', unsafe_allow_html=True)
 
-# 대시보드
+# 타이머 남은 시간 계산
+elapsed_time = time.time() - st.session_state.get("turn_start_time", time.time())
+remaining_time = max(0, int(TURN_TIME_LIMIT - elapsed_time))
+
+# 시간이 종료되면 자동 다음 턴 실행
+if remaining_time <= 0:
+    next_turn()
+    st.rerun()
+
+# 상단 대시보드
 asset = total_asset()
 profit = profit_rate()
 
-c1, c2, c3, c4 = st.columns(4)
+c1, c2, c3, c4, c5 = st.columns([2, 2, 2, 2, 2])
 
 with c1:
     st.markdown(f'<div class="metric-card"><div class="metric-label">보유 현금</div><div class="metric-value">₩{st.session_state.cash:,}</div></div>', unsafe_allow_html=True)
@@ -502,10 +517,13 @@ with c3:
     st.markdown(f'<div class="metric-card"><div class="metric-label">수익률</div><div class="metric-value">{profit:+.2f}%</div></div>', unsafe_allow_html=True)
 
 with c4:
-    st.markdown(f'<div class="metric-card"><div class="metric-label">현재 턴</div><div class="metric-value">{min(st.session_state.turn, 10)} / 10</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card"><div class="metric-label">현재 턴</div><div class="metric-value">{min(st.session_state.turn, TOTAL_TURNS)} / {TOTAL_TURNS}</div></div>', unsafe_allow_html=True)
+
+with c5:
+    st.markdown(f'<div class="timer-card"><div class="metric-label" style="color:#ef4444; font-weight:700;">⏱️ 남은 시간</div><div class="timer-value">{remaining_time}초</div></div>', unsafe_allow_html=True)
 
 st.write("")
-st.progress(min(st.session_state.turn / 10, 1.0))
+st.progress(min(st.session_state.turn / TOTAL_TURNS, 1.0))
 
 
 # ==============================
@@ -608,27 +626,14 @@ if st.session_state.trade_history:
 else:
     st.caption("아직 거래 기록이 없습니다.")
 
-# 턴 진행 버튼
+# 수동 다음 턴 진행 버튼
 st.write("")
 
-if st.button("지문 분석 제출 ➔ 다음 턴 결과 반영", type="primary", use_container_width=True):
-    if st.session_state.turn <= 10:
+if st.button("지문 분석 완료 ➔ 즉시 다음 턴 진행", type="primary", use_container_width=True):
+    if st.session_state.turn <= TOTAL_TURNS:
         next_turn()
         st.rerun()
 
-st.write("")
-
-# 설정 영역
-st.markdown('<div class="section-title">게임 설정</div>', unsafe_allow_html=True)
-
-reset_col1, reset_col2 = st.columns([2, 1])
-
-with reset_col1:
-    init_cash = st.number_input("시작 소지금 설정 (원)", min_value=1000, value=st.session_state.get("start_cash", 1_000_000), step=100_000)
-
-with reset_col2:
-    st.write("")
-    st.write("")
-    if st.button("게임 초기화 / 적용", use_container_width=True):
-        new_game(init_cash)
-        st.rerun()
+# 실시간 1초 카운트다운 새로고침용 (주기적 루프)
+time.sleep(1)
+st.rerun()
