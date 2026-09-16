@@ -15,15 +15,18 @@ st.set_page_config(
 )
 
 # ==============================
-# CSS - 진한 글씨체 및 가독성 강화 스타일
+# CSS - 모든 바탕 및 글자 완전 검은색(#000000) 고정
 # ==============================
 
 st.markdown("""
 <style>
-/* 기본 전체 글꼴 및 진한 기본 텍스트 색상 */
+/* 기본 전체 글꼴 및 무조건 검은색 강제 적용 */
+* {
+    color: #000000 !important;
+}
+
 .stApp {
     background-color: #f4f6fa;
-    color: #0f172a;
 }
 
 .block-container {
@@ -33,29 +36,29 @@ st.markdown("""
 
 /* 상단 제목 */
 .title-box {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
+    background: #e2e8f0;
+    border: 3px solid #000000;
     padding: 28px;
     border-radius: 22px;
-    color: #ffffff;
     margin-bottom: 20px;
 }
 
 .title {
     font-size: 38px;
     font-weight: 900;
-    color: #ffffff;
+    color: #000000 !important;
 }
 
 .subtitle {
     font-size: 16px;
-    font-weight: 600;
-    color: #e2e8f0;
+    font-weight: 800;
+    color: #000000 !important;
 }
 
 .section-title {
     font-size: 22px;
     font-weight: 900;
-    color: #0f172a;
+    color: #000000 !important;
     margin-top: 25px;
     margin-bottom: 12px;
 }
@@ -63,30 +66,30 @@ st.markdown("""
 /* 대시보드 카드 */
 .metric-card {
     background: white;
-    border: 2px solid #94a3b8;
+    border: 3px solid #000000;
     border-radius: 18px;
     padding: 20px;
     min-height: 110px;
 }
 
 .metric-label {
-    color: #334155;
+    color: #000000 !important;
     font-size: 15px;
-    font-weight: 800;
+    font-weight: 900;
 }
 
 .metric-value {
     font-size: 24px;
     font-weight: 900;
-    color: #0f172a;
+    color: #000000 !important;
     margin-top: 6px;
     white-space: nowrap;
 }
 
-/* 타이머 전용 레드 박스 */
+/* 타이머 전용 레드 박스 (글자는 검은색) */
 .timer-card {
     background: #fef2f2;
-    border: 2px solid #dc2626;
+    border: 3px solid #000000;
     border-radius: 18px;
     padding: 20px;
     min-height: 110px;
@@ -95,25 +98,26 @@ st.markdown("""
 .timer-value {
     font-size: 26px;
     font-weight: 900;
-    color: #b91c1c;
+    color: #000000 !important;
     margin-top: 4px;
 }
 
 /* 돌발 특수 이벤트 대형 박스 */
 .flash-event-box-crash {
     background: #fff1f2;
-    border: 3px solid #e11d48;
+    border: 3px solid #000000;
     border-radius: 20px;
     padding: 22px 28px;
     margin-top: 15px;
     margin-bottom: 20px;
-    box-shadow: 0 10px 25px rgba(225, 29, 72, 0.15);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
 .flash-badge-crash {
     display: inline-block;
-    background: #be123c;
-    color: #ffffff;
+    background: #e2e8f0;
+    border: 2px solid #000000;
+    color: #000000 !important;
     font-size: 13px;
     font-weight: 900;
     padding: 5px 12px;
@@ -125,21 +129,21 @@ st.markdown("""
 .flash-title-crash {
     font-size: 22px;
     font-weight: 900;
-    color: #881337;
+    color: #000000 !important;
     margin-bottom: 8px;
 }
 
 .flash-text-crash {
     font-size: 16px;
-    color: #4c0519;
-    font-weight: 700;
+    color: #000000 !important;
+    font-weight: 800;
     line-height: 1.6;
 }
 
-/* 지문 박스 - 글자색 최상단 강화 */
+/* 지문 박스 */
 .news-card-large {
     background: #ffffff;
-    border: 2px solid #0f172a;
+    border: 3px solid #000000;
     border-radius: 20px;
     padding: 30px 35px;
     margin-top: 15px;
@@ -148,8 +152,9 @@ st.markdown("""
 
 .news-badge {
     display: inline-block;
-    background: #0f172a;
-    color: #ffffff;
+    background: #e2e8f0;
+    border: 2px solid #000000;
+    color: #000000 !important;
     font-size: 14px;
     font-weight: 900;
     padding: 6px 14px;
@@ -160,19 +165,20 @@ st.markdown("""
 .news-title-large {
     font-size: 23px;
     font-weight: 900;
-    color: #0f172a;
+    color: #000000 !important;
     line-height: 1.4;
     margin-bottom: 15px;
 }
 
 .news-text-large {
     font-size: 16px;
-    color: #0f172a;
-    font-weight: 700;
+    color: #000000 !important;
+    font-weight: 800;
     line-height: 1.8;
     background: #f1f5f9;
     padding: 20px;
-    border-left: 6px solid #0f172a;
+    border-left: 6px solid #000000;
+    border: 2px solid #000000;
     border-radius: 8px;
     white-space: pre-line;
     font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
@@ -182,7 +188,7 @@ st.markdown("""
 .stock-card {
     background: white;
     border-radius: 20px;
-    border: 2px solid #64748b;
+    border: 3px solid #000000;
     padding: 22px;
     min-height: 230px;
     margin-bottom: 10px;
@@ -191,7 +197,7 @@ st.markdown("""
 .stock-name {
     font-size: 22px;
     font-weight: 900;
-    color: #0f172a;
+    color: #000000 !important;
     white-space: nowrap;
 }
 
@@ -199,14 +205,14 @@ st.markdown("""
     font-size: 26px;
     font-weight: 900;
     margin-top: 8px;
-    color: #0f172a;
+    color: #000000 !important;
     white-space: nowrap;
 }
 
 .stock-info {
-    color: #334155;
+    color: #000000 !important;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 800;
     margin-top: 5px;
     white-space: nowrap;
 }
@@ -215,23 +221,25 @@ st.markdown("""
     background: white;
     border-radius: 22px;
     padding: 30px;
-    border: 2px solid #0f172a;
+    border: 3px solid #000000;
     text-align: center;
-    color: #0f172a;
+    color: #000000 !important;
 }
 
 .stButton > button {
     min-height: 48px;
     border-radius: 12px;
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 900;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
 }
 
 .stNumberInput input {
     min-height: 45px;
     font-size: 16px;
-    font-weight: 700;
-    color: #0f172a;
+    font-weight: 900;
+    color: #000000 !important;
 }
 
 @media (max-width: 800px) {
@@ -482,7 +490,7 @@ if st.session_state.game_over:
         grade = "D (4등급 이하 - 깡통)"
 
     st.markdown('<div class="title-box"><div class="title">STOCK TYCOON</div><div class="subtitle">5턴 스피드 레이스 결과</div></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="result-card"><h1>평가 완료</h1><h2>{grade}</h2><h3>최종 자산</h3><h2>₩{asset:,}</h2><p style="font-weight:800; font-size:18px;">수익률 {profit:+.2f}%</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="result-card"><h1>평가 완료</h1><h2>{grade}</h2><h3>최종 자산</h3><h2>₩{asset:,}</h2><p style="font-weight:900; font-size:18px;">수익률 {profit:+.2f}%</p></div>', unsafe_allow_html=True)
 
     st.write("")
 
@@ -530,7 +538,7 @@ with c4:
     st.markdown(f'<div class="metric-card"><div class="metric-label">현재 턴</div><div class="metric-value">{min(st.session_state.turn, TOTAL_TURNS)} / {TOTAL_TURNS}</div></div>', unsafe_allow_html=True)
 
 with c5:
-    st.markdown(f'<div class="timer-card"><div class="metric-label" style="color:#dc2626; font-weight:800;">⏱️ 남은 시간</div><div class="timer-value">{remaining_time}초</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="timer-card"><div class="metric-label" style="font-weight:900;">⏱️ 남은 시간</div><div class="timer-value">{remaining_time}초</div></div>', unsafe_allow_html=True)
 
 st.write("")
 st.progress(min(st.session_state.turn / TOTAL_TURNS, 1.0))
@@ -600,10 +608,10 @@ for row in rows:
                 <div class="stock-name">{stock}</div>
                 <div class="stock-price">₩{price:,}</div>
                 <div class="stock-info">직전 변동률 {change:+d}%</div>
-                <hr style="margin: 10px 0; border:none; border-top:1px solid #cbd5e1;">
+                <hr style="margin: 10px 0; border:none; border-top:2px solid #000000;">
                 <div class="stock-info"><b>보유량:</b> {holding:,}주</div>
                 <div class="stock-info"><b>{avg_text}</b></div>
-                <div class="stock-info" style="color: {'#dc2626' if '수익률: +' in profit_text else ('#2563eb' if '수익률: -' in profit_text and '-%' not in profit_text else '#475569')}; font-weight:800;">{profit_text}</div>
+                <div class="stock-info" style="font-weight:900;">{profit_text}</div>
             </div>
             """, unsafe_allow_html=True)
             
