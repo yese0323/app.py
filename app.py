@@ -303,18 +303,18 @@ div[data-testid="stButton"] > button[kind="primary"]:hover {
 
 
 # ==============================
-# 게임 데이터 (수익률 변동 폭 대폭 상향 🔥)
+# 게임 데이터
 # ==============================
 
 TOTAL_TURNS = 5
 TURN_TIME_LIMIT = 30
 
 STOCKS = {
-    "삼성전자": 70000,
-    "SK하이닉스": 120000,
-    "카카오": 50000,
-    "테슬라": 300000,
-    "엔비디아": 180000
+    "삼성전자": 30000,
+    "SK하이닉스": 60000,
+    "카카오": 25000,
+    "테슬라": 120000,
+    "엔비디아": 60000
 }
 
 EXAM_NEWS_POOL = [
@@ -324,7 +324,6 @@ EXAM_NEWS_POOL = [
         "text": """중앙은행이 경기 진작을 위해 기준금리 인하를 발표했으나, 통화당국은 물가 상방 압력을 통제하고자 역레포 금리를 상향 조정하여 시중 단기 유동성을 강하게 흡수하는 상반된 정책을 동시 집행하였다.
 
 이로 인해 금융권 자금이 위험자산인 IT·플랫폼 부문에서 이탈하여 고정 채권형 자산으로 이동하고 있다. 한편, 완성차/배터리 제조 단가 둔화 세는 소폭 완화되는 반사이익이 발생하고 있다.""",
-        # 🚀 이전보다 2~3배 확장된 변동률 범위
         "effects": {"삼성전자": (-35, -15), "SK하이닉스": (-40, -20), "카카오": (-45, -25), "테슬라": (15, 45)}
     },
     {
@@ -333,7 +332,7 @@ EXAM_NEWS_POOL = [
         "text": """빅테크 기업들의 AI 인프라 투자 대비 실질 수익성 창출 시점이 연기됨에 따라 비싼 범용 GPU 구매를 급격히 줄이고, 자체 설계한 주문형 반도체(ASIC) 생산 비율을 확대하기로 선회하였다.
 
 범용 GPU 공급망을 독점하던 기업에 악재로 작용하나, 맞춤형 ASIC 반도체 위탁 생산(Foundry) 대기업에게는 대체 수주 기회가 열리고 있다.""",
-        "effects": {"엔비디아": (-50, -20), "삼성전자": (20, 50), "SK하이닉스": (-25, 25)}
+        "effects": {"엔비디아": (-50, -20), "삼성전자": (20, 50), "SK하이닉스": (-25, 10)}
     },
     {
         "code": "HARD-03 (통화 및 무역)",
@@ -484,7 +483,7 @@ def sell_stock(stock, amount):
 
 
 # ==============================
-# 턴 진행 로직 (수익률 변동 강화 적용)
+# 턴 진행 로직
 # ==============================
 
 def next_turn():
@@ -503,23 +502,19 @@ def next_turn():
     changes = {}
 
     for stock in STOCKS:
-        # 뉴스 영향 기반 계산
         if stock in current_effects:
             min_p, max_p = current_effects[stock]
             base_change = random.randint(min_p, max_p)
-            # 10% 확률로 예상과 반대로 튀는 반전 노이즈
             if random.random() < 0.10:
                 base_change = -base_change
         else:
             base_change = random.randint(-15, 15)
         
-        # 돌발 이벤트 영향 추가
         flash_change = 0
         if flash_data and stock in flash_data["effects"]:
             f_min, f_max = flash_data["effects"][stock]
             flash_change = random.randint(f_min, f_max)
         
-        # 시장 기본 변동 노이즈 확대 (-5% ~ +5%)
         noise = random.randint(-5, 5)
         
         total_change = base_change + flash_change + noise
@@ -542,23 +537,26 @@ def next_turn():
 
 
 # ==============================
-# 결과 화면 (하얀색 바탕 & 검은색 타이틀)
+# 결과 화면 (요청사항: S~F 등급표 적용)
 # ==============================
 
 if st.session_state.game_over:
     asset = total_asset()
     profit = profit_rate()
 
-    if profit >= 50:
-        grade = "S (스피드 타짜 - 신의 손)"
-    elif profit >= 25:
+    # 🔥 등급 조건 개편 (S >= 60, A >= 30, B >= 15, C >= 0, D >= -10, F < -10)
+    if profit >= 60:
+        grade = "S (신의 손 - 전설의 트레이더)"
+    elif profit >= 30:
         grade = "A (1등급 - 성공한 트레이더)"
-    elif profit >= 10:
-        grade = "B (2등급 - 우수)"
+    elif profit >= 15:
+        grade = "B (2등급 - 우수한 성과)"
     elif profit >= 0:
-        grade = "C (3등급 - 원금 보존)"
+        grade = "C (3등급 - 본전 치기)"
+    elif profit >= -10:
+        grade = "D (4등급 - 심각한 손실)"
     else:
-        grade = "D (4등급 이하 - 깡통)"
+        grade = "F (원금 박살 - 깡통 계좌)"
 
     profit_color = "#ef4444" if profit >= 0 else "#2563eb"
 
