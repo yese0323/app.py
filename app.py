@@ -552,7 +552,7 @@ if st.session_state.game_over:
     elif profit >= 15:
         grade = "B (2등급 - 주식..해보실래요?)"
     elif profit >= 0:
-        grade = "C (3등급 - 노잼 ㅡㅡ)"
+        grade = "C (3등급 - 겁쟁이들의 쉽터)"
     elif profit >= -10:
         grade = "D (4등급 - 돌도 수익률이 0% 인데ㅋ)"
     else:
