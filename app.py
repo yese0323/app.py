@@ -632,10 +632,7 @@ st.progress(st.session_state.turn / MAX_TURNS)
 # ==========================================
 
 # 현금이 0원이거나 순자산이 0원 이하일 때 표시
-loan_condition = (
-    st.session_state.cash <= 0
-    or get_total_asset() <= 0
-)
+loan_condition = get_total_asset() <= 0
 
 remaining_loan = get_remaining_loan()
 
