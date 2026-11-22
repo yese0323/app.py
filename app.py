@@ -3,13 +3,8 @@ import streamlit as st
 import random
 import pandas as pd
 
-# =========================
-# 기본 설정
-# =========================
-
 st.set_page_config(
     page_title="STOCK TYCOON",
-    page_icon="",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -26,18 +21,17 @@ STOCKS = {
 DOGECOIN = "도지코인"
 DOGECOIN_START_PRICE = 1000
 DOGECOIN_DELIST_PROBABILITY = 0.10
-
 ALL_ASSETS = list(STOCKS.keys()) + [DOGECOIN]
 
 # =========================
-# 화면 CSS
+# CSS
 # =========================
 
 st.markdown("""
 <style>
-header {visibility: hidden;}
-footer {visibility: hidden;}
-#MainMenu {visibility: hidden;}
+header, footer, #MainMenu {
+    visibility: hidden;
+}
 
 .block-container {
     padding-top: 0.5rem;
@@ -49,7 +43,7 @@ footer {visibility: hidden;}
 
 h1 {
     font-size: 25px !important;
-    margin-bottom: 3px !important;
+    margin-bottom: 2px !important;
 }
 
 h2 {
@@ -60,10 +54,6 @@ h3 {
     font-size: 16px !important;
 }
 
-p {
-    font-size: 13px !important;
-}
-
 div[data-testid="stMetric"] {
     padding: 7px 10px;
     border: 1px solid rgba(128,128,128,0.25);
@@ -71,59 +61,88 @@ div[data-testid="stMetric"] {
 }
 
 div[data-testid="stMetricValue"] {
-    font-size: 21px;
-}
-
-div[data-testid="stMetricLabel"] {
-    font-size: 12px;
-}
-
-.asset-card {
-    border: 1px solid rgba(128,128,128,0.35);
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 4px;
-    min-height: 95px;
-}
-
-.news-card {
-    border: 1px solid rgba(128,128,128,0.35);
-    border-radius: 9px;
-    padding: 9px 12px;
-    margin-bottom: 8px;
-}
-
-.doge-card {
-    border: 1px solid rgba(220,160,40,0.65);
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 4px;
-    min-height: 95px;
-}
-
-.stButton button {
-    min-height: 32px;
-    padding: 2px 5px;
-    font-size: 12px;
-}
-
-.stNumberInput input {
-    font-size: 13px;
+    font-size: 20px;
 }
 
 div[data-testid="stVerticalBlock"] {
     gap: 0.35rem;
 }
 
+.stButton button {
+    min-height: 34px;
+    font-size: 12px;
+}
+
+.doge-panel {
+    background: linear-gradient(115deg, #34270b, #76500d, #b77a13);
+    border: 2px solid #e5ad35;
+    border-radius: 16px;
+    padding: 18px 20px;
+    color: white;
+    margin: 8px 0 10px 0;
+    box-shadow: 0 4px 16px rgba(190,130,20,0.22);
+}
+
+.doge-title {
+    font-size: 23px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.doge-price {
+    font-size: 35px;
+    font-weight: 900;
+    margin-top: 5px;
+    line-height: 1.2;
+}
+
+.doge-sub {
+    font-size: 12px;
+    opacity: 0.9;
+    margin-top: 5px;
+}
+
+.doge-warning {
+    background: rgba(0,0,0,0.22);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 9px;
+    padding: 8px 10px;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.doge-dead {
+    background: linear-gradient(115deg, #350909, #790d0d, #a51c1c);
+    border: 2px solid #ff5252;
+    border-radius: 16px;
+    padding: 18px 20px;
+    color: white;
+    margin: 8px 0 10px 0;
+}
+
+.stock-card {
+    border: 1px solid rgba(128,128,128,0.35);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+.news-card {
+    border: 1px solid rgba(128,128,128,0.3);
+    border-radius: 9px;
+    padding: 9px 12px;
+    margin-bottom: 8px;
+}
+
 hr {
-    margin: 5px 0 !important;
+    margin: 6px 0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 
 # =========================
-# 게임 초기화
+# 초기화
 # =========================
 
 def initialize_game():
@@ -143,7 +162,8 @@ def initialize_game():
     st.session_state.price_history = []
 
     st.session_state.market_news = "시장이 개장했습니다. 투자를 시작하세요."
-    st.session_state.doge_notice = "도지코인은 매 턴 독립적으로 가격이 변동합니다."
+    st.session_state.doge_notice = "도지코인은 매 턴 독립적으로 변동합니다."
+    st.session_state.doge_last_change = 0
 
     st.session_state.dogecoin_delisted = False
     st.session_state.game_over = False
@@ -159,7 +179,7 @@ if "cash" not in st.session_state:
 
 
 # =========================
-# 계산 함수
+# 계산
 # =========================
 
 def get_total_asset():
@@ -174,21 +194,17 @@ def get_total_asset():
     return total
 
 
-def get_profit():
-    return get_total_asset() - STARTING_CASH
-
-
 def format_money(value):
     return f"{int(value):,}원"
 
 
 def add_history(message):
     st.session_state.history.insert(0, message)
-    st.session_state.history = st.session_state.history[:5]
+    st.session_state.history = st.session_state.history[:6]
 
 
 # =========================
-# 매수
+# 거래
 # =========================
 
 def buy_stock(asset, quantity):
@@ -196,44 +212,40 @@ def buy_stock(asset, quantity):
         return
 
     if asset == DOGECOIN and st.session_state.dogecoin_delisted:
-        st.warning("상장폐지된 도지코인은 거래할 수 없습니다.")
+        st.error("상장폐지된 도지코인은 거래할 수 없습니다.")
         return
 
     if quantity <= 0:
-        st.warning("매수 수량을 확인하세요.")
+        st.warning("수량을 확인하세요.")
         return
 
     price = st.session_state.prices[asset]
-    total_price = price * quantity
+    total = price * quantity
 
-    if total_price > st.session_state.cash:
+    if total > st.session_state.cash:
         st.warning("보유 현금이 부족합니다.")
         return
 
-    st.session_state.cash -= total_price
+    st.session_state.cash -= total
     st.session_state.holdings[asset] += quantity
 
     add_history(
-        f"{asset} {quantity}주 매수 | -{format_money(total_price)}"
+        f"{asset} {quantity}주 매수 | -{format_money(total)}"
     )
 
     st.rerun()
 
-
-# =========================
-# 매도
-# =========================
 
 def sell_stock(asset, quantity):
     if st.session_state.game_over:
         return
 
     if asset == DOGECOIN and st.session_state.dogecoin_delisted:
-        st.warning("상장폐지된 도지코인은 거래할 수 없습니다.")
+        st.error("상장폐지된 도지코인은 거래할 수 없습니다.")
         return
 
     if quantity <= 0:
-        st.warning("매도 수량을 확인하세요.")
+        st.warning("수량을 확인하세요.")
         return
 
     if quantity > st.session_state.holdings[asset]:
@@ -241,20 +253,20 @@ def sell_stock(asset, quantity):
         return
 
     price = st.session_state.prices[asset]
-    total_price = price * quantity
+    total = price * quantity
 
-    st.session_state.cash += total_price
+    st.session_state.cash += total
     st.session_state.holdings[asset] -= quantity
 
     add_history(
-        f"{asset} {quantity}주 매도 | +{format_money(total_price)}"
+        f"{asset} {quantity}주 매도 | +{format_money(total)}"
     )
 
     st.rerun()
 
 
 # =========================
-# 일반 주식 뉴스 이벤트
+# 뉴스
 # =========================
 
 NEWS_EVENTS = [
@@ -302,7 +314,7 @@ NEWS_EVENTS = [
 
 
 # =========================
-# 다음 턴 진행
+# 턴 진행
 # =========================
 
 def next_turn():
@@ -311,73 +323,60 @@ def next_turn():
 
     if st.session_state.turn >= MAX_TURNS:
         st.session_state.game_over = True
-        return
+        st.rerun()
 
-    # 1. 일반 주식 뉴스 이벤트
+    # 일반 주식
     event = random.choice(NEWS_EVENTS)
-
     st.session_state.market_news = event["news"]
 
     for asset in STOCKS:
-        base_change = random.uniform(-0.05, 0.05)
-        event_effect = event["effects"][asset]
+        random_change = random.uniform(-0.05, 0.05)
 
         new_price = int(
             st.session_state.prices[asset]
-            * (1 + base_change)
-            * event_effect
+            * (1 + random_change)
+            * event["effects"][asset]
         )
 
         st.session_state.prices[asset] = max(1, new_price)
 
-    # 2. 도지코인 독립 이벤트
-    # 일반 뉴스와 무관하게 별도로 확률 계산
-
+    # 도지코인: 뉴스와 완전히 독립
     if not st.session_state.dogecoin_delisted:
 
         if random.random() < DOGECOIN_DELIST_PROBABILITY:
-
             st.session_state.dogecoin_delisted = True
             st.session_state.prices[DOGECOIN] = 0
+            st.session_state.doge_last_change = -100
 
             st.session_state.doge_notice = (
-                "도지코인 상장폐지! 보유한 도지코인의 가치가 0원이 되었습니다."
+                "상장폐지 발생! 도지코인의 거래가 영구 중단되었습니다."
             )
 
             add_history("도지코인 상장폐지 발생!")
 
         else:
-            doge_change = random.uniform(-0.50, 0.50)
+            change = random.uniform(-0.50, 0.50)
 
             old_price = st.session_state.prices[DOGECOIN]
+            new_price = max(1, int(old_price * (1 + change)))
 
-            new_price = int(
-                old_price * (1 + doge_change)
-            )
-
-            st.session_state.prices[DOGECOIN] = max(1, new_price)
-
-            percentage = doge_change * 100
+            st.session_state.prices[DOGECOIN] = new_price
+            st.session_state.doge_last_change = change * 100
 
             st.session_state.doge_notice = (
-                f"도지코인 가격 변동: {percentage:+.1f}%"
+                f"이번 턴 가격 변동: {change * 100:+.1f}%"
             )
 
     else:
-        st.session_state.doge_notice = (
-            "도지코인은 이미 상장폐지되어 거래가 중단되었습니다."
-        )
+        st.session_state.doge_notice = "이미 상장폐지된 종목입니다."
 
-    # 3. 턴 증가
     st.session_state.turn += 1
 
-    # 4. 가격 기록
     st.session_state.price_history.append({
         asset: st.session_state.prices[asset]
         for asset in ALL_ASSETS
     })
 
-    # 5. 마지막 턴 종료
     if st.session_state.turn >= MAX_TURNS:
         st.session_state.game_over = True
 
@@ -385,50 +384,41 @@ def next_turn():
 
 
 # =========================
-# 게임 제목
+# 제목
 # =========================
 
 st.title("STOCK TYCOON")
-
 st.caption("가상의 주식 투자 시뮬레이션 | 시작 자금 1,000,000원")
 
 
 # =========================
-# 게임 종료 화면
+# 게임 종료
 # =========================
 
 if st.session_state.game_over:
-
     total = get_total_asset()
     profit = total - STARTING_CASH
     rate = profit / STARTING_CASH * 100
 
     st.subheader("투자 종료")
 
-    c1, c2, c3 = st.columns(3)
-
-    c1.metric("최종 자산", format_money(total))
-    c2.metric("수익", format_money(profit))
-    c3.metric("수익률", f"{rate:+.2f}%")
+    a, b, c = st.columns(3)
+    a.metric("최종 자산", format_money(total))
+    b.metric("수익", format_money(profit))
+    c.metric("수익률", f"{rate:+.2f}%")
 
     if rate >= 50:
         grade = "S"
-        comment = "놀라운 투자 실력입니다!"
     elif rate >= 20:
         grade = "A"
-        comment = "훌륭한 투자 성과입니다."
     elif rate >= 0:
         grade = "B"
-        comment = "안정적인 투자였습니다."
     elif rate >= -20:
         grade = "C"
-        comment = "아쉬운 투자였습니다."
     else:
         grade = "F"
-        comment = "투자에 실패했습니다."
 
     st.markdown(f"## 최종 등급: {grade}")
-    st.write(comment)
 
     if st.session_state.dogecoin_delisted:
         st.error("도지코인은 상장폐지되었습니다.")
@@ -438,17 +428,11 @@ if st.session_state.game_over:
     for asset in ALL_ASSETS:
         quantity = st.session_state.holdings[asset]
         value = quantity * st.session_state.prices[asset]
-
         st.write(
             f"**{asset}** | {quantity}주 | {format_money(value)}"
         )
 
-    st.subheader("자산 변화")
-
-    df = pd.DataFrame(st.session_state.price_history)
-    df.index = range(1, len(df) + 1)
-
-    st.line_chart(df)
+    st.line_chart(pd.DataFrame(st.session_state.price_history))
 
     if st.button("새 게임 시작", use_container_width=True):
         initialize_game()
@@ -462,215 +446,218 @@ if st.session_state.game_over:
 # =========================
 
 total_asset = get_total_asset()
-profit = get_profit()
+profit = total_asset - STARTING_CASH
 
 m1, m2, m3, m4, m5 = st.columns(5)
 
-m1.metric(
-    "보유 현금",
-    format_money(st.session_state.cash)
+m1.metric("보유 현금", format_money(st.session_state.cash))
+m2.metric("총 자산", format_money(total_asset))
+m3.metric("수익", format_money(profit))
+m4.metric("진행 턴", f"{st.session_state.turn}/{MAX_TURNS}")
+
+held = sum(
+    1 for q in st.session_state.holdings.values() if q > 0
 )
 
-m2.metric(
-    "총 자산",
-    format_money(total_asset)
-)
+m5.metric("보유 종목", f"{held}개")
 
-m3.metric(
-    "수익",
-    format_money(profit),
-    delta=format_money(profit)
-)
-
-m4.metric(
-    "진행 턴",
-    f"{st.session_state.turn} / {MAX_TURNS}"
-)
-
-held_count = sum(
-    1 for quantity in st.session_state.holdings.values()
-    if quantity > 0
-)
-
-m5.metric(
-    "보유 종목",
-    f"{held_count}개"
-)
-
-st.progress(
-    st.session_state.turn / MAX_TURNS
-)
+st.progress(st.session_state.turn / MAX_TURNS)
 
 
 # =========================
-# 뉴스 영역
+# 도지코인 메인 패널
 # =========================
 
-left_news, right_news = st.columns(2)
+st.markdown("## SPECIAL ASSET")
 
-with left_news:
+doge_price = st.session_state.prices[DOGECOIN]
+doge_quantity = st.session_state.holdings[DOGECOIN]
+doge_value = doge_price * doge_quantity
+
+if st.session_state.dogecoin_delisted:
+
     st.markdown(
         f"""
-        <div class="news-card">
-            <b>시장 뉴스</b><br>
-            {st.session_state.market_news}
+        <div class="doge-dead">
+            <div class="doge-title">DOGECOIN | 상장폐지</div>
+            <div class="doge-price">0원</div>
+            <div class="doge-sub">
+                거래가 영구 중단되었습니다.
+            </div>
+            <div class="doge-warning">
+                보유 수량: {doge_quantity}개 |
+                평가 금액: 0원<br>
+                이 게임에서는 도지코인을 다시 거래할 수 없습니다.
+            </div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-with right_news:
-    if st.session_state.dogecoin_delisted:
-        st.error(st.session_state.doge_notice)
-    else:
-        st.markdown(
-            f"""
-            <div class="news-card">
-                <b>도지코인 독립 이벤트</b><br>
-                {st.session_state.doge_notice}
+else:
+
+    change = st.session_state.doge_last_change
+
+    st.markdown(
+        f"""
+        <div class="doge-panel">
+            <div class="doge-title">DOGECOIN</div>
+            <div class="doge-price">{format_money(doge_price)}</div>
+            <div class="doge-sub">
+                이번 턴 변동률: {change:+.1f}%
+                &nbsp; | &nbsp;
+                보유 수량: {doge_quantity}개
+                &nbsp; | &nbsp;
+                평가 금액: {format_money(doge_value)}
             </div>
-            """,
-            unsafe_allow_html=True
+            <div class="doge-warning">
+                상장폐지 위험: 매 턴 10% 확률
+                &nbsp; | &nbsp;
+                일반 뉴스와 무관하게 독립적으로 가격 변동
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# 도지코인 전용 거래 영역
+if not st.session_state.dogecoin_delisted:
+
+    d1, d2, d3, d4 = st.columns([1, 1, 1, 2])
+
+    with d1:
+        doge_buy_quantity = st.number_input(
+            "도지코인 매수 수량",
+            min_value=1,
+            value=1,
+            key="doge_buy_quantity"
+        )
+
+    with d2:
+        if st.button(
+            "도지코인 매수",
+            use_container_width=True,
+            type="primary"
+        ):
+            buy_stock(DOGECOIN, doge_buy_quantity)
+
+    with d3:
+        if st.button(
+            "도지코인 매도",
+            use_container_width=True,
+            disabled=doge_quantity <= 0
+        ):
+            sell_stock(DOGECOIN, min(doge_buy_quantity, doge_quantity))
+
+    with d4:
+        st.caption(
+            "주의: 상장폐지 시 보유 중인 도지코인의 평가 금액은 0원이 됩니다."
         )
 
 
 # =========================
-# 주식 거래 화면
+# 일반 주식
 # =========================
 
-st.subheader("주식 거래")
+st.divider()
+st.subheader("일반 주식")
 
-columns = st.columns(4)
+stock_columns = st.columns(3)
 
-for index, asset in enumerate(ALL_ASSETS):
+for index, asset in enumerate(STOCKS):
 
-    with columns[index]:
+    with stock_columns[index]:
 
         price = st.session_state.prices[asset]
-        quantity_owned = st.session_state.holdings[asset]
-
-        is_doge = asset == DOGECOIN
-        is_delisted = (
-            is_doge and st.session_state.dogecoin_delisted
-        )
-
-        card_class = "doge-card" if is_doge else "asset-card"
-
-        if is_delisted:
-            status = "상장폐지"
-        elif is_doge:
-            status = "독립 변동 종목"
-        else:
-            status = "거래 가능"
+        owned = st.session_state.holdings[asset]
 
         st.markdown(
             f"""
-            <div class="{card_class}">
+            <div class="stock-card">
                 <b>{asset}</b><br>
-                <span style="font-size:19px;font-weight:bold;">
+                <span style="font-size:20px;font-weight:bold;">
                     {format_money(price)}
                 </span><br>
                 <span style="font-size:12px;">
-                    보유: {quantity_owned}주 | {status}
+                    보유: {owned}주
                 </span>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        input_key = f"quantity_{index}"
-
         quantity = st.number_input(
             "거래 수량",
             min_value=1,
-            max_value=100000,
             value=1,
-            step=1,
-            key=input_key
+            key=f"stock_quantity_{index}"
         )
-
-        buy_disabled = is_delisted or st.session_state.cash < price
 
         b1, b2 = st.columns(2)
 
         with b1:
             if st.button(
                 "매수",
-                key=f"buy_{index}",
-                use_container_width=True,
-                disabled=buy_disabled
+                key=f"stock_buy_{index}",
+                use_container_width=True
             ):
                 buy_stock(asset, quantity)
 
         with b2:
             if st.button(
                 "매도",
-                key=f"sell_{index}",
+                key=f"stock_sell_{index}",
                 use_container_width=True,
-                disabled=(
-                    is_delisted
-                    or quantity_owned <= 0
-                )
+                disabled=owned <= 0
             ):
-                sell_stock(asset, quantity)
-
-        if is_delisted:
-            st.caption("거래 불가능")
+                sell_stock(asset, min(quantity, owned))
 
 
 # =========================
-# 하단 정보 영역
+# 뉴스와 하단 정보
 # =========================
 
 st.divider()
 
 left, middle, right = st.columns([1.2, 1, 0.8])
 
-# 자산 그래프
 with left:
-    st.subheader("자산 가격 변화")
+    st.subheader("시장 뉴스")
+    st.info(st.session_state.market_news)
 
-    df = pd.DataFrame(st.session_state.price_history)
-
-    df.index = range(1, len(df) + 1)
-
-    st.line_chart(
-        df,
-        height=150
-    )
-
-# 거래 내역
 with middle:
-    st.subheader("최근 거래 내역")
+    st.subheader("최근 거래")
 
     if st.session_state.history:
         for item in st.session_state.history[:5]:
             st.caption(item)
     else:
-        st.caption("아직 거래 내역이 없습니다.")
+        st.caption("거래 내역이 없습니다.")
 
-# 턴 진행
 with right:
     st.subheader("게임 진행")
 
-    st.write(
-        f"현재 {st.session_state.turn}번째 턴"
-    )
-
-    st.write(
-        f"남은 턴: {MAX_TURNS - st.session_state.turn}"
-    )
+    st.write(f"현재 턴: {st.session_state.turn}/{MAX_TURNS}")
 
     if st.button(
         "다음 턴 진행",
-        use_container_width=True,
-        type="primary"
+        type="primary",
+        use_container_width=True
     ):
         next_turn()
 
-    if st.button(
-        "게임 초기화",
-        use_container_width=True
-    ):
+    if st.button("게임 초기화", use_container_width=True):
         initialize_game()
         st.rerun()
+
+
+# =========================
+# 가격 그래프
+# =========================
+
+st.divider()
+st.subheader("가격 변화 그래프")
+
+chart_df = pd.DataFrame(st.session_state.price_history)
+
+st.line_chart(chart_df, height=170)
