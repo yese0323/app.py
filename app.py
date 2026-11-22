@@ -16,6 +16,8 @@ st.set_page_config(
 STARTING_CASH = 1_000_000
 MAX_TURNS = 10
 
+MAX_LOAN = 500_000
+
 STOCKS = {
     "삼성전자": 70000,
     "SK하이닉스": 120000,
@@ -140,6 +142,13 @@ div[data-testid="stVerticalBlock"] {
     margin-bottom: 8px;
 }
 
+.loan-panel {
+    border: 2px solid #d69b32;
+    border-radius: 12px;
+    padding: 14px;
+    margin: 10px 0;
+}
+
 hr {
     margin: 6px 0 !important;
 }
@@ -179,6 +188,10 @@ def initialize_game():
     st.session_state.dogecoin_delisted = False
     st.session_state.game_over = False
 
+    # 대출 관련 데이터
+    st.session_state.loan_debt = 0
+    st.session_state.loan_prompt_open = False
+
     st.session_state.price_history.append({
         asset: st.session_state.prices[asset]
         for asset in ALL_ASSETS
@@ -193,7 +206,7 @@ if "cash" not in st.session_state:
 # 4. 계산 함수
 # ==========================================
 
-def get_total_asset():
+def get_gross_asset():
     total = st.session_state.cash
 
     for asset in ALL_ASSETS:
@@ -203,6 +216,11 @@ def get_total_asset():
         )
 
     return total
+
+
+def get_total_asset():
+    # 대출금은 빚이므로 순자산에서 차감
+    return get_gross_asset() - st.session_state.loan_debt
 
 
 def format_money(value):
@@ -329,7 +347,45 @@ def sell_all(asset):
 
 
 # ==========================================
-# 9. 뉴스 이벤트
+# 9. 대출 시스템
+# ==========================================
+
+def get_remaining_loan():
+    return MAX_LOAN - st.session_state.loan_debt
+
+
+def take_loan(amount):
+    if st.session_state.game_over:
+        return
+
+    remaining = get_remaining_loan()
+
+    if amount <= 0:
+        st.warning("대출 금액을 확인하세요.")
+        return
+
+    if amount > remaining:
+        st.warning("대출 가능 한도를 초과했습니다.")
+        return
+
+    st.session_state.cash += amount
+    st.session_state.loan_debt += amount
+
+    st.session_state.loan_prompt_open = False
+
+    add_history(
+        f"대출 실행 | +{format_money(amount)}"
+    )
+
+    st.success(
+        f"{format_money(amount)} 대출이 완료되었습니다."
+    )
+
+    st.rerun()
+
+
+# ==========================================
+# 10. 뉴스 이벤트
 # ==========================================
 
 NEWS_EVENTS = [
@@ -377,7 +433,7 @@ NEWS_EVENTS = [
 
 
 # ==========================================
-# 10. 다음 턴 진행
+# 11. 다음 턴 진행
 # ==========================================
 
 def next_turn():
@@ -457,7 +513,7 @@ def next_turn():
 
 
 # ==========================================
-# 11. 제목
+# 12. 제목
 # ==========================================
 
 st.title("STOCK TYCOON")
@@ -467,7 +523,7 @@ st.caption(
 
 
 # ==========================================
-# 12. 게임 종료 화면
+# 13. 게임 종료 화면
 # ==========================================
 
 if st.session_state.game_over:
@@ -480,7 +536,7 @@ if st.session_state.game_over:
 
     a, b, c = st.columns(3)
 
-    a.metric("최종 자산", format_money(total))
+    a.metric("최종 순자산", format_money(total))
     b.metric("수익", format_money(profit))
     c.metric("수익률", f"{rate:+.2f}%")
 
@@ -499,6 +555,10 @@ if st.session_state.game_over:
 
     if st.session_state.dogecoin_delisted:
         st.error("도지코인은 상장폐지되었습니다.")
+
+    st.write(
+        f"누적 대출금: {format_money(st.session_state.loan_debt)}"
+    )
 
     st.subheader("최종 보유 자산")
 
@@ -524,13 +584,13 @@ if st.session_state.game_over:
 
 
 # ==========================================
-# 13. 상단 자산 정보
+# 14. 상단 자산 정보
 # ==========================================
 
 total_asset = get_total_asset()
 profit = total_asset - STARTING_CASH
 
-m1, m2, m3, m4, m5 = st.columns(5)
+m1, m2, m3, m4, m5, m6 = st.columns(6)
 
 m1.metric(
     "보유 현금",
@@ -538,7 +598,7 @@ m1.metric(
 )
 
 m2.metric(
-    "총 자산",
+    "총 순자산",
     format_money(total_asset)
 )
 
@@ -559,11 +619,96 @@ held = sum(
 
 m5.metric("보유 종목", f"{held}개")
 
+m6.metric(
+    "누적 대출",
+    format_money(st.session_state.loan_debt)
+)
+
 st.progress(st.session_state.turn / MAX_TURNS)
 
 
 # ==========================================
-# 14. 도지코인 메인 패널
+# 15. 대출 안내 화면
+# ==========================================
+
+# 현금이 0원이거나 순자산이 0원 이하일 때 표시
+loan_condition = (
+    st.session_state.cash <= 0
+    or get_total_asset() <= 0
+)
+
+remaining_loan = get_remaining_loan()
+
+if loan_condition:
+
+    st.markdown("""
+    <div class="loan-panel">
+        <h3>자금 부족!</h3>
+        <p>
+            현재 투자 자금이 부족합니다.<br>
+            추가 자금이 필요하다면 대출을 이용할 수 있습니다.
+        </p>
+        <h3>대출하시겠습니까?</h3>
+        <p>최대 대출 가능 금액: 500,000원</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if remaining_loan > 0:
+
+        if not st.session_state.loan_prompt_open:
+
+            if st.button(
+                "대출 신청하기",
+                type="primary",
+                use_container_width=True
+            ):
+                st.session_state.loan_prompt_open = True
+                st.rerun()
+
+        else:
+
+            st.subheader("대출 금액 선택")
+
+            loan_amount = st.number_input(
+                "대출받을 금액",
+                min_value=1,
+                max_value=remaining_loan,
+                value=min(100000, remaining_loan),
+                step=10000,
+                key="loan_amount_input"
+            )
+
+            st.caption(
+                f"남은 대출 한도: {format_money(remaining_loan)}"
+            )
+
+            loan_col1, loan_col2 = st.columns(2)
+
+            with loan_col1:
+                if st.button(
+                    "대출 확정",
+                    type="primary",
+                    use_container_width=True
+                ):
+                    take_loan(loan_amount)
+
+            with loan_col2:
+                if st.button(
+                    "취소",
+                    use_container_width=True
+                ):
+                    st.session_state.loan_prompt_open = False
+                    st.rerun()
+
+    else:
+        st.error(
+            "대출 한도 500,000원을 모두 사용했습니다. "
+            "추가 대출은 불가능합니다."
+        )
+
+
+# ==========================================
+# 16. 도지코인 메인 패널
 # ==========================================
 
 st.markdown("## SPECIAL ASSET")
@@ -620,7 +765,7 @@ else:
 
 
 # ==========================================
-# 15. 도지코인 거래 버튼
+# 17. 도지코인 거래 버튼
 # ==========================================
 
 if not st.session_state.dogecoin_delisted:
@@ -677,7 +822,7 @@ else:
 
 
 # ==========================================
-# 16. 일반 주식 거래
+# 18. 일반 주식 거래
 # ==========================================
 
 st.divider()
@@ -752,7 +897,7 @@ for index, asset in enumerate(STOCKS):
 
 
 # ==========================================
-# 17. 하단 정보
+# 19. 하단 정보
 # ==========================================
 
 st.divider()
@@ -795,7 +940,7 @@ with right:
 
 
 # ==========================================
-# 18. 가격 변화 그래프
+# 20. 가격 변화 그래프
 # ==========================================
 
 st.divider()
