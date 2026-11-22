@@ -3,203 +3,19 @@ import streamlit as st
 import random
 import pandas as pd
 
-# =====================================
-# 1. 기본 설정
-# =====================================
+# =========================
+# 기본 설정
+# =========================
 
 st.set_page_config(
     page_title="STOCK TYCOON",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-st.markdown("""
-<style>
-.stApp {
-    background: #eef1f6;
-}
-
-.block-container {
-    max-width: 1600px;
-    padding: 0.7rem 1.2rem 0.5rem 1.2rem;
-}
-
-header, footer, #MainMenu {
-    visibility: hidden;
-}
-
-h1, h2, h3, p {
-    margin-top: 0;
-}
-
-.title-box {
-    background: linear-gradient(110deg, #17243b, #344e77);
-    color: white;
-    padding: 13px 22px;
-    border-radius: 15px;
-    margin-bottom: 10px;
-}
-
-.title {
-    font-size: 27px;
-    font-weight: 900;
-}
-
-.subtitle {
-    font-size: 12px;
-    opacity: .75;
-}
-
-.metric {
-    background: white;
-    border: 1px solid #dfe4ed;
-    border-radius: 12px;
-    padding: 10px 13px;
-    min-height: 73px;
-}
-
-.metric-label {
-    font-size: 11px;
-    color: #778196;
-}
-
-.metric-value {
-    font-size: 19px;
-    font-weight: 850;
-    color: #1b2940;
-    margin-top: 4px;
-}
-
-.news {
-    background: white;
-    border: 1px solid #dfe4ed;
-    border-radius: 12px;
-    padding: 12px 16px;
-    min-height: 78px;
-}
-
-.news-heading {
-    font-size: 15px;
-    font-weight: 800;
-    color: #263955;
-}
-
-.news-text {
-    font-size: 12px;
-    color: #68758a;
-    margin-top: 5px;
-}
-
-.stock {
-    background: white;
-    border: 1px solid #dfe4ed;
-    border-radius: 13px;
-    padding: 12px;
-    min-height: 100px;
-}
-
-.stock-name {
-    font-size: 16px;
-    font-weight: 850;
-    color: #263955;
-}
-
-.stock-price {
-    font-size: 21px;
-    font-weight: 900;
-    color: #17243b;
-    margin-top: 5px;
-}
-
-.stock-info {
-    font-size: 11px;
-    color: #7b8495;
-}
-
-.doge {
-    background: #fff8e8;
-    border: 2px solid #e5bb54;
-    border-radius: 13px;
-    padding: 11px;
-    min-height: 100px;
-}
-
-.doge .stock-name {
-    color: #94670d;
-}
-
-.doge .stock-price {
-    color: #8a5c00;
-}
-
-.section {
-    font-size: 15px;
-    font-weight: 850;
-    color: #253650;
-    margin: 8px 0 5px 2px;
-}
-
-.stButton > button {
-    min-height: 34px;
-    height: 34px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 750;
-    padding: 0 5px;
-}
-
-div[data-testid="stNumberInput"] input {
-    min-height: 32px;
-    height: 32px;
-    font-size: 12px;
-}
-
-div[data-testid="stNumberInput"] label {
-    font-size: 11px;
-}
-
-.bottom-box {
-    background: white;
-    border: 1px solid #dfe4ed;
-    border-radius: 12px;
-    padding: 10px;
-    min-height: 125px;
-}
-
-.small-text {
-    font-size: 11px;
-    color: #778196;
-}
-
-div[data-testid="stProgress"] {
-    margin-top: -8px;
-    margin-bottom: 5px;
-}
-
-@media (max-width: 900px) {
-    .block-container {
-        padding: 0.5rem;
-    }
-
-    .title {
-        font-size: 21px;
-    }
-
-    .metric-value {
-        font-size: 15px;
-    }
-
-    .stock-price {
-        font-size: 16px;
-    }
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-# =====================================
-# 2. 종목 및 뉴스
-# =====================================
+STARTING_CASH = 1_000_000
+MAX_TURNS = 10
 
 STOCKS = {
     "삼성전자": 70000,
@@ -207,475 +23,654 @@ STOCKS = {
     "카카오": 50000
 }
 
-DOGE = "도지코인"
-ASSETS = list(STOCKS.keys()) + [DOGE]
+DOGECOIN = "도지코인"
+DOGECOIN_START_PRICE = 1000
+DOGECOIN_DELIST_PROBABILITY = 0.10
 
-NEWS = [
+ALL_ASSETS = list(STOCKS.keys()) + [DOGECOIN]
+
+# =========================
+# 화면 CSS
+# =========================
+
+st.markdown("""
+<style>
+header {visibility: hidden;}
+footer {visibility: hidden;}
+#MainMenu {visibility: hidden;}
+
+.block-container {
+    padding-top: 0.5rem;
+    padding-bottom: 0.3rem;
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+    max-width: 100%;
+}
+
+h1 {
+    font-size: 25px !important;
+    margin-bottom: 3px !important;
+}
+
+h2 {
+    font-size: 19px !important;
+}
+
+h3 {
+    font-size: 16px !important;
+}
+
+p {
+    font-size: 13px !important;
+}
+
+div[data-testid="stMetric"] {
+    padding: 7px 10px;
+    border: 1px solid rgba(128,128,128,0.25);
+    border-radius: 9px;
+}
+
+div[data-testid="stMetricValue"] {
+    font-size: 21px;
+}
+
+div[data-testid="stMetricLabel"] {
+    font-size: 12px;
+}
+
+.asset-card {
+    border: 1px solid rgba(128,128,128,0.35);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 4px;
+    min-height: 95px;
+}
+
+.news-card {
+    border: 1px solid rgba(128,128,128,0.35);
+    border-radius: 9px;
+    padding: 9px 12px;
+    margin-bottom: 8px;
+}
+
+.doge-card {
+    border: 1px solid rgba(220,160,40,0.65);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 4px;
+    min-height: 95px;
+}
+
+.stButton button {
+    min-height: 32px;
+    padding: 2px 5px;
+    font-size: 12px;
+}
+
+.stNumberInput input {
+    font-size: 13px;
+}
+
+div[data-testid="stVerticalBlock"] {
+    gap: 0.35rem;
+}
+
+hr {
+    margin: 5px 0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# =========================
+# 게임 초기화
+# =========================
+
+def initialize_game():
+    st.session_state.cash = STARTING_CASH
+
+    st.session_state.prices = {
+        **STOCKS,
+        DOGECOIN: DOGECOIN_START_PRICE
+    }
+
+    st.session_state.holdings = {
+        asset: 0 for asset in ALL_ASSETS
+    }
+
+    st.session_state.turn = 1
+    st.session_state.history = []
+    st.session_state.price_history = []
+
+    st.session_state.market_news = "시장이 개장했습니다. 투자를 시작하세요."
+    st.session_state.doge_notice = "도지코인은 매 턴 독립적으로 가격이 변동합니다."
+
+    st.session_state.dogecoin_delisted = False
+    st.session_state.game_over = False
+
+    st.session_state.price_history.append({
+        asset: st.session_state.prices[asset]
+        for asset in ALL_ASSETS
+    })
+
+
+if "cash" not in st.session_state:
+    initialize_game()
+
+
+# =========================
+# 계산 함수
+# =========================
+
+def get_total_asset():
+    total = st.session_state.cash
+
+    for asset in ALL_ASSETS:
+        total += (
+            st.session_state.holdings[asset]
+            * st.session_state.prices[asset]
+        )
+
+    return total
+
+
+def get_profit():
+    return get_total_asset() - STARTING_CASH
+
+
+def format_money(value):
+    return f"{int(value):,}원"
+
+
+def add_history(message):
+    st.session_state.history.insert(0, message)
+    st.session_state.history = st.session_state.history[:5]
+
+
+# =========================
+# 매수
+# =========================
+
+def buy_stock(asset, quantity):
+    if st.session_state.game_over:
+        return
+
+    if asset == DOGECOIN and st.session_state.dogecoin_delisted:
+        st.warning("상장폐지된 도지코인은 거래할 수 없습니다.")
+        return
+
+    if quantity <= 0:
+        st.warning("매수 수량을 확인하세요.")
+        return
+
+    price = st.session_state.prices[asset]
+    total_price = price * quantity
+
+    if total_price > st.session_state.cash:
+        st.warning("보유 현금이 부족합니다.")
+        return
+
+    st.session_state.cash -= total_price
+    st.session_state.holdings[asset] += quantity
+
+    add_history(
+        f"{asset} {quantity}주 매수 | -{format_money(total_price)}"
+    )
+
+    st.rerun()
+
+
+# =========================
+# 매도
+# =========================
+
+def sell_stock(asset, quantity):
+    if st.session_state.game_over:
+        return
+
+    if asset == DOGECOIN and st.session_state.dogecoin_delisted:
+        st.warning("상장폐지된 도지코인은 거래할 수 없습니다.")
+        return
+
+    if quantity <= 0:
+        st.warning("매도 수량을 확인하세요.")
+        return
+
+    if quantity > st.session_state.holdings[asset]:
+        st.warning("보유 수량이 부족합니다.")
+        return
+
+    price = st.session_state.prices[asset]
+    total_price = price * quantity
+
+    st.session_state.cash += total_price
+    st.session_state.holdings[asset] -= quantity
+
+    add_history(
+        f"{asset} {quantity}주 매도 | +{format_money(total_price)}"
+    )
+
+    st.rerun()
+
+
+# =========================
+# 일반 주식 뉴스 이벤트
+# =========================
+
+NEWS_EVENTS = [
     {
-        "type": "positive_stock",
-        "title": "삼성전자 신제품 출시",
-        "text": "신제품이 시장에서 좋은 반응을 얻고 있습니다.",
-        "stock": "삼성전자"
+        "news": "반도체 산업 호황! 관련 기업 주가 상승",
+        "effects": {
+            "삼성전자": 1.10,
+            "SK하이닉스": 1.15,
+            "카카오": 0.98
+        }
     },
     {
-        "type": "positive_stock",
-        "title": "SK하이닉스 반도체 수요 증가",
-        "text": "반도체 수요가 증가하며 기대감이 높아졌습니다.",
-        "stock": "SK하이닉스"
+        "news": "IT 기업 투자 심리 악화! 기술주 하락",
+        "effects": {
+            "삼성전자": 0.97,
+            "SK하이닉스": 0.94,
+            "카카오": 0.90
+        }
     },
     {
-        "type": "positive_stock",
-        "title": "카카오 신규 서비스 인기",
-        "text": "신규 서비스가 많은 이용자를 확보했습니다.",
-        "stock": "카카오"
+        "news": "국내 증시 상승세! 투자자들의 기대감 증가",
+        "effects": {
+            "삼성전자": 1.08,
+            "SK하이닉스": 1.07,
+            "카카오": 1.09
+        }
     },
     {
-        "type": "negative_stock",
-        "title": "삼성전자 실적 전망 하락",
-        "text": "실적에 대한 시장의 우려가 커지고 있습니다.",
-        "stock": "삼성전자"
+        "news": "경기 침체 우려 확산! 시장 전반 하락",
+        "effects": {
+            "삼성전자": 0.92,
+            "SK하이닉스": 0.91,
+            "카카오": 0.93
+        }
     },
     {
-        "type": "negative_stock",
-        "title": "SK하이닉스 공급 문제",
-        "text": "반도체 공급 문제로 불안감이 커졌습니다.",
-        "stock": "SK하이닉스"
-    },
-    {
-        "type": "negative_stock",
-        "title": "카카오 규제 우려",
-        "text": "새로운 규제 가능성이 제기되었습니다.",
-        "stock": "카카오"
-    },
-    {
-        "type": "general_positive",
-        "title": "국내 증시 상승",
-        "text": "투자 심리가 좋아지며 시장이 상승했습니다.",
-        "stock": None
-    },
-    {
-        "type": "general_negative",
-        "title": "국내 증시 하락",
-        "text": "경제 불안감으로 시장이 하락했습니다.",
-        "stock": None
-    },
-    {
-        "type": "surge",
-        "title": "시장 급등",
-        "text": "강한 매수세가 나타났습니다.",
-        "stock": None
-    },
-    {
-        "type": "crash",
-        "title": "시장 급락",
-        "text": "갑작스러운 악재가 발생했습니다.",
-        "stock": None
+        "news": "특별한 시장 이슈 없음. 주가 소폭 변동",
+        "effects": {
+            "삼성전자": 1.00,
+            "SK하이닉스": 1.00,
+            "카카오": 1.00
+        }
     }
 ]
 
 
-# =====================================
-# 3. 게임 초기화
-# =====================================
-
-def new_game():
-    st.session_state.cash = 1_000_000
-    st.session_state.prices = STOCKS.copy()
-    st.session_state.prices[DOGE] = 1000
-
-    st.session_state.holdings = {
-        asset: 0 for asset in ASSETS
-    }
-
-    st.session_state.turn = 1
-    st.session_state.history = [1_000_000]
-    st.session_state.trade_history = []
-    st.session_state.news = None
-    st.session_state.game_over = False
-
-    st.session_state.last_changes = {
-        asset: 0 for asset in ASSETS
-    }
-
-
-if "cash" not in st.session_state:
-    new_game()
-
-
-# =====================================
-# 4. 자산 계산
-# =====================================
-
-def total_asset():
-    value = sum(
-        st.session_state.prices[a] *
-        st.session_state.holdings[a]
-        for a in ASSETS
-    )
-    return st.session_state.cash + value
-
-
-def profit_rate():
-    return (total_asset() - 1_000_000) / 1_000_000 * 100
-
-
-# =====================================
-# 5. 뉴스 생성
-# =====================================
-
-def generate_news():
-    st.session_state.news = random.choices(
-        NEWS,
-        weights=[4, 4, 4, 5, 5, 5, 3, 5, 3, 5]
-    )[0]
-
-
-# =====================================
-# 6. 일반 주식 변동
-# =====================================
-
-def apply_news():
-    news = st.session_state.news
-
-    if not news:
-        return
-
-    for stock in STOCKS:
-        kind = news["type"]
-        affected = news["stock"]
-
-        if kind == "positive_stock":
-            change = (
-                random.randint(20, 40)
-                if stock == affected
-                else random.randint(-25, 25)
-            )
-
-        elif kind == "negative_stock":
-            change = (
-                random.randint(-40, -20)
-                if stock == affected
-                else random.randint(-25, 25)
-            )
-
-        elif kind == "general_positive":
-            change = random.randint(10, 30)
-
-        elif kind == "general_negative":
-            change = random.randint(-30, -10)
-
-        elif kind == "surge":
-            change = random.randint(40, 60)
-
-        elif kind == "crash":
-            change = random.randint(-60, -40)
-
-        else:
-            change = random.randint(-25, 25)
-
-        old = st.session_state.prices[stock]
-        new = int(old * (1 + change / 100))
-
-        st.session_state.prices[stock] = max(1000, new)
-        st.session_state.last_changes[stock] = change
-
-
-# =====================================
-# 7. 도지코인 독립 변동
-# =====================================
-
-def apply_dogecoin():
-    old = st.session_state.prices[DOGE]
-
-    # 뉴스와 완전히 독립적인 랜덤 변동
-    change = random.uniform(-50, 50)
-
-    new = int(old * (1 + change / 100))
-
-    st.session_state.prices[DOGE] = max(1, new)
-    st.session_state.last_changes[DOGE] = round(change, 1)
-
-
-# =====================================
-# 8. 매수 및 매도
-# =====================================
-
-def buy(asset, amount):
-    price = st.session_state.prices[asset]
-    cost = price * amount
-
-    if amount <= 0:
-        st.warning("수량을 확인하세요.")
-        return
-
-    if cost > st.session_state.cash:
-        st.warning("현금이 부족합니다.")
-        return
-
-    st.session_state.cash -= cost
-    st.session_state.holdings[asset] += amount
-
-    st.session_state.trade_history.insert(
-        0, f"매수 {asset} {amount:,}개"
-    )
-
-
-def sell(asset, amount):
-    if amount <= 0:
-        st.warning("수량을 확인하세요.")
-        return
-
-    if amount > st.session_state.holdings[asset]:
-        st.warning("보유 수량이 부족합니다.")
-        return
-
-    revenue = st.session_state.prices[asset] * amount
-
-    st.session_state.cash += revenue
-    st.session_state.holdings[asset] -= amount
-
-    st.session_state.trade_history.insert(
-        0, f"매도 {asset} {amount:,}개"
-    )
-
-
-# =====================================
-# 9. 턴 진행
-# =====================================
+# =========================
+# 다음 턴 진행
+# =========================
 
 def next_turn():
-    generate_news()
-    apply_news()
-    apply_dogecoin()
+    if st.session_state.game_over:
+        return
 
-    st.session_state.history.append(total_asset())
+    if st.session_state.turn >= MAX_TURNS:
+        st.session_state.game_over = True
+        return
+
+    # 1. 일반 주식 뉴스 이벤트
+    event = random.choice(NEWS_EVENTS)
+
+    st.session_state.market_news = event["news"]
+
+    for asset in STOCKS:
+        base_change = random.uniform(-0.05, 0.05)
+        event_effect = event["effects"][asset]
+
+        new_price = int(
+            st.session_state.prices[asset]
+            * (1 + base_change)
+            * event_effect
+        )
+
+        st.session_state.prices[asset] = max(1, new_price)
+
+    # 2. 도지코인 독립 이벤트
+    # 일반 뉴스와 무관하게 별도로 확률 계산
+
+    if not st.session_state.dogecoin_delisted:
+
+        if random.random() < DOGECOIN_DELIST_PROBABILITY:
+
+            st.session_state.dogecoin_delisted = True
+            st.session_state.prices[DOGECOIN] = 0
+
+            st.session_state.doge_notice = (
+                "도지코인 상장폐지! 보유한 도지코인의 가치가 0원이 되었습니다."
+            )
+
+            add_history("도지코인 상장폐지 발생!")
+
+        else:
+            doge_change = random.uniform(-0.50, 0.50)
+
+            old_price = st.session_state.prices[DOGECOIN]
+
+            new_price = int(
+                old_price * (1 + doge_change)
+            )
+
+            st.session_state.prices[DOGECOIN] = max(1, new_price)
+
+            percentage = doge_change * 100
+
+            st.session_state.doge_notice = (
+                f"도지코인 가격 변동: {percentage:+.1f}%"
+            )
+
+    else:
+        st.session_state.doge_notice = (
+            "도지코인은 이미 상장폐지되어 거래가 중단되었습니다."
+        )
+
+    # 3. 턴 증가
     st.session_state.turn += 1
 
-    if st.session_state.turn > 10:
+    # 4. 가격 기록
+    st.session_state.price_history.append({
+        asset: st.session_state.prices[asset]
+        for asset in ALL_ASSETS
+    })
+
+    # 5. 마지막 턴 종료
+    if st.session_state.turn >= MAX_TURNS:
         st.session_state.game_over = True
 
+    st.rerun()
 
-# =====================================
-# 10. 게임 종료
-# =====================================
+
+# =========================
+# 게임 제목
+# =========================
+
+st.title("STOCK TYCOON")
+
+st.caption("가상의 주식 투자 시뮬레이션 | 시작 자금 1,000,000원")
+
+
+# =========================
+# 게임 종료 화면
+# =========================
 
 if st.session_state.game_over:
-    asset = total_asset()
-    profit = profit_rate()
 
-    grade = (
-        "S" if profit >= 50 else
-        "A" if profit >= 25 else
-        "B" if profit >= 10 else
-        "C" if profit >= 0 else
-        "D"
-    )
+    total = get_total_asset()
+    profit = total - STARTING_CASH
+    rate = profit / STARTING_CASH * 100
 
-    st.markdown("""
-    <div class="title-box">
-        <div class="title">STOCK TYCOON</div>
-        GAME RESULT
-    </div>
-    """, unsafe_allow_html=True)
+    st.subheader("투자 종료")
 
-    st.markdown(
-        f"""
-        <div class="news">
-            <div class="news-heading">게임 종료 · 등급 {grade}</div>
-            <div class="stock-price">₩{asset:,}</div>
-            <div class="news-text">최종 수익률 {profit:+.2f}%</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    c1, c2, c3 = st.columns(3)
 
-    st.line_chart(
-        pd.DataFrame({"총 자산": st.session_state.history}),
-        height=250
-    )
+    c1.metric("최종 자산", format_money(total))
+    c2.metric("수익", format_money(profit))
+    c3.metric("수익률", f"{rate:+.2f}%")
+
+    if rate >= 50:
+        grade = "S"
+        comment = "놀라운 투자 실력입니다!"
+    elif rate >= 20:
+        grade = "A"
+        comment = "훌륭한 투자 성과입니다."
+    elif rate >= 0:
+        grade = "B"
+        comment = "안정적인 투자였습니다."
+    elif rate >= -20:
+        grade = "C"
+        comment = "아쉬운 투자였습니다."
+    else:
+        grade = "F"
+        comment = "투자에 실패했습니다."
+
+    st.markdown(f"## 최종 등급: {grade}")
+    st.write(comment)
+
+    if st.session_state.dogecoin_delisted:
+        st.error("도지코인은 상장폐지되었습니다.")
+
+    st.subheader("최종 보유 자산")
+
+    for asset in ALL_ASSETS:
+        quantity = st.session_state.holdings[asset]
+        value = quantity * st.session_state.prices[asset]
+
+        st.write(
+            f"**{asset}** | {quantity}주 | {format_money(value)}"
+        )
+
+    st.subheader("자산 변화")
+
+    df = pd.DataFrame(st.session_state.price_history)
+    df.index = range(1, len(df) + 1)
+
+    st.line_chart(df)
 
     if st.button("새 게임 시작", use_container_width=True):
-        new_game()
+        initialize_game()
         st.rerun()
 
     st.stop()
 
 
-# =====================================
-# 11. 상단 헤더
-# =====================================
+# =========================
+# 상단 자산 정보
+# =========================
 
-st.markdown("""
-<div class="title-box">
-    <div class="title">STOCK TYCOON</div>
-    <div class="subtitle">THE MARKET IS YOURS</div>
-</div>
-""", unsafe_allow_html=True)
+total_asset = get_total_asset()
+profit = get_profit()
+
+m1, m2, m3, m4, m5 = st.columns(5)
+
+m1.metric(
+    "보유 현금",
+    format_money(st.session_state.cash)
+)
+
+m2.metric(
+    "총 자산",
+    format_money(total_asset)
+)
+
+m3.metric(
+    "수익",
+    format_money(profit),
+    delta=format_money(profit)
+)
+
+m4.metric(
+    "진행 턴",
+    f"{st.session_state.turn} / {MAX_TURNS}"
+)
+
+held_count = sum(
+    1 for quantity in st.session_state.holdings.values()
+    if quantity > 0
+)
+
+m5.metric(
+    "보유 종목",
+    f"{held_count}개"
+)
+
+st.progress(
+    st.session_state.turn / MAX_TURNS
+)
 
 
-# =====================================
-# 12. 자산 대시보드
-# =====================================
+# =========================
+# 뉴스 영역
+# =========================
 
-asset = total_asset()
-profit = profit_rate()
+left_news, right_news = st.columns(2)
 
-metrics = st.columns(5)
+with left_news:
+    st.markdown(
+        f"""
+        <div class="news-card">
+            <b>시장 뉴스</b><br>
+            {st.session_state.market_news}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-values = [
-    ("보유 현금", f"₩{st.session_state.cash:,}"),
-    ("총 자산", f"₩{asset:,}"),
-    ("수익률", f"{profit:+.2f}%"),
-    ("현재 턴", f"{min(st.session_state.turn, 10)} / 10"),
-    ("보유 종목", f"{sum(1 for a in ASSETS if st.session_state.holdings[a] > 0)}개")
-]
-
-for col, (label, value) in zip(metrics, values):
-    with col:
+with right_news:
+    if st.session_state.dogecoin_delisted:
+        st.error(st.session_state.doge_notice)
+    else:
         st.markdown(
             f"""
-            <div class="metric">
-                <div class="metric-label">{label}</div>
-                <div class="metric-value">{value}</div>
+            <div class="news-card">
+                <b>도지코인 독립 이벤트</b><br>
+                {st.session_state.doge_notice}
             </div>
             """,
             unsafe_allow_html=True
         )
 
-st.progress(min(st.session_state.turn / 10, 1.0))
 
+# =========================
+# 주식 거래 화면
+# =========================
 
-# =====================================
-# 13. 뉴스
-# =====================================
+st.subheader("주식 거래")
 
-st.markdown('<div class="section">오늘의 뉴스</div>', unsafe_allow_html=True)
+columns = st.columns(4)
 
-if st.session_state.news:
-    news = st.session_state.news
-    news_title = news["title"]
-    news_text = news["text"]
-else:
-    news_title = "시장 개장 준비"
-    news_text = "다음 턴을 진행하면 새로운 뉴스가 발표됩니다."
+for index, asset in enumerate(ALL_ASSETS):
 
-st.markdown(
-    f"""
-    <div class="news">
-        <div class="news-heading">{news_title}</div>
-        <div class="news-text">{news_text}</div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+    with columns[index]:
 
+        price = st.session_state.prices[asset]
+        quantity_owned = st.session_state.holdings[asset]
 
-# =====================================
-# 14. 종목 카드 4개
-# =====================================
+        is_doge = asset == DOGECOIN
+        is_delisted = (
+            is_doge and st.session_state.dogecoin_delisted
+        )
 
-st.markdown('<div class="section">주식 및 코인 거래</div>', unsafe_allow_html=True)
+        card_class = "doge-card" if is_doge else "asset-card"
 
-cols = st.columns(4)
-
-for index, name in enumerate(ASSETS):
-    price = st.session_state.prices[name]
-    change = st.session_state.last_changes[name]
-    holding = st.session_state.holdings[name]
-
-    with cols[index]:
-
-        card_class = "doge" if name == DOGE else "stock"
-
-        display_name = "DOGECOIN" if name == DOGE else name
+        if is_delisted:
+            status = "상장폐지"
+        elif is_doge:
+            status = "독립 변동 종목"
+        else:
+            status = "거래 가능"
 
         st.markdown(
             f"""
             <div class="{card_class}">
-                <div class="stock-name">{display_name}</div>
-                <div class="stock-price">₩{price:,}</div>
-                <div class="stock-info">변동 {change:+.1f}%</div>
-                <div class="stock-info">보유 {holding:,}개</div>
+                <b>{asset}</b><br>
+                <span style="font-size:19px;font-weight:bold;">
+                    {format_money(price)}
+                </span><br>
+                <span style="font-size:12px;">
+                    보유: {quantity_owned}주 | {status}
+                </span>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        amount = st.number_input(
-            "수량",
+        input_key = f"quantity_{index}"
+
+        quantity = st.number_input(
+            "거래 수량",
             min_value=1,
+            max_value=100000,
             value=1,
             step=1,
-            key=f"amount_{name}"
+            key=input_key
         )
+
+        buy_disabled = is_delisted or st.session_state.cash < price
 
         b1, b2 = st.columns(2)
 
         with b1:
             if st.button(
                 "매수",
-                key=f"buy_{name}",
-                use_container_width=True
+                key=f"buy_{index}",
+                use_container_width=True,
+                disabled=buy_disabled
             ):
-                buy(name, amount)
-                st.rerun()
+                buy_stock(asset, quantity)
 
         with b2:
             if st.button(
                 "매도",
-                key=f"sell_{name}",
-                use_container_width=True
+                key=f"sell_{index}",
+                use_container_width=True,
+                disabled=(
+                    is_delisted
+                    or quantity_owned <= 0
+                )
             ):
-                sell(name, amount)
-                st.rerun()
+                sell_stock(asset, quantity)
+
+        if is_delisted:
+            st.caption("거래 불가능")
 
 
-# =====================================
-# 15. 하단 정보
-# =====================================
+# =========================
+# 하단 정보 영역
+# =========================
 
-st.markdown("---")
+st.divider()
 
-left, middle, right = st.columns([1.2, 1.2, 1])
+left, middle, right = st.columns([1.2, 1, 0.8])
 
+# 자산 그래프
 with left:
-    st.markdown('<div class="section">자산 변화</div>', unsafe_allow_html=True)
+    st.subheader("자산 가격 변화")
+
+    df = pd.DataFrame(st.session_state.price_history)
+
+    df.index = range(1, len(df) + 1)
 
     st.line_chart(
-        pd.DataFrame({"자산": st.session_state.history}),
-        height=145
+        df,
+        height=150
     )
 
+# 거래 내역
 with middle:
-    st.markdown('<div class="section">최근 거래</div>', unsafe_allow_html=True)
+    st.subheader("최근 거래 내역")
 
-    if st.session_state.trade_history:
-        for item in st.session_state.trade_history[:5]:
-            st.markdown(
-                f'<div class="small-text">{item}</div>',
-                unsafe_allow_html=True
-            )
+    if st.session_state.history:
+        for item in st.session_state.history[:5]:
+            st.caption(item)
     else:
-        st.caption("거래 기록이 없습니다.")
+        st.caption("아직 거래 내역이 없습니다.")
 
+# 턴 진행
 with right:
-    st.markdown('<div class="section">게임 진행</div>', unsafe_allow_html=True)
+    st.subheader("게임 진행")
 
-    st.write(f"현재 자산: ₩{total_asset():,}")
+    st.write(
+        f"현재 {st.session_state.turn}번째 턴"
+    )
+
+    st.write(
+        f"남은 턴: {MAX_TURNS - st.session_state.turn}"
+    )
 
     if st.button(
         "다음 턴 진행",
-        type="primary",
-        use_container_width=True
+        use_container_width=True,
+        type="primary"
     ):
         next_turn()
-        st.rerun()
 
     if st.button(
         "게임 초기화",
         use_container_width=True
     ):
-        new_game()
+        initialize_game()
         st.rerun()
-
-st.caption("도지코인은 일반 뉴스와 무관하게 매 턴 독립적으로 랜덤 변동합니다.")
