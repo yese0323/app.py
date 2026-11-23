@@ -540,11 +540,11 @@ if st.session_state.game_over:
     b.metric("수익", format_money(profit))
     c.metric("수익률", f"{rate:+.2f}%")
 
-    if rate >= 50:
+    if rate >= 80:
         grade = "S"
-    elif rate >= 20:
+    elif rate >= 50:
         grade = "A"
-    elif rate >= 0:
+    elif rate >= 20:
         grade = "B"
     elif rate >= -20:
         grade = "C"
