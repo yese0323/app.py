@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-STARTING_CASH = 1_000_000
+STARTING_CASH = 250_000
 MAX_TURNS = 10
 
 MAX_LOAN = 500_000
