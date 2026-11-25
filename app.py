@@ -12,15 +12,15 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-STARTING_CASH = 250_000
+DEFAULT_STARTING_CASH = 1_000_000
 MAX_TURNS = 10
 
 MAX_LOAN = 500_000
 
 STOCKS = {
-    "엔비디아": 7000,
-    "테슬라": 12000,
-    "삼성": 5000
+    "엔비디아": 70000,
+    "테슬라": 120000,
+    "삼성": 50000
 }
 
 DOGECOIN = "도지코인"
@@ -151,6 +151,33 @@ div[data-testid="stVerticalBlock"] {
 hr {
     margin: 6px 0 !important;
 }
+
+/* 태블릿 가로 화면 최적화 */
+@media screen and (orientation: landscape) and (min-width: 900px) {
+    .block-container {
+        padding: 0.25rem 0.65rem 0.2rem 0.65rem !important;
+        max-width: 100% !important;
+    }
+    h1 { font-size: 21px !important; margin: 0 !important; }
+    h2 { font-size: 16px !important; margin: 0.15rem 0 !important; }
+    h3 { font-size: 13px !important; margin: 0.1rem 0 !important; }
+    p, label, .stCaption, [data-testid="stMarkdownContainer"] {
+        font-size: 11px !important;
+    }
+    div[data-testid="stVerticalBlock"] { gap: 0.12rem !important; }
+    div[data-testid="stMetric"] { padding: 3px 6px !important; }
+    div[data-testid="stMetricValue"] { font-size: 15px !important; }
+    div[data-testid="stMetricLabel"] { font-size: 10px !important; }
+    .stButton button { min-height: 27px !important; padding: 0 5px !important; font-size: 10px !important; }
+    .doge-panel, .doge-dead { padding: 8px 11px !important; margin: 3px 0 !important; }
+    .doge-title { font-size: 17px !important; }
+    .doge-price { font-size: 23px !important; margin-top: 1px !important; }
+    .doge-sub, .doge-warning { font-size: 10px !important; margin-top: 3px !important; padding: 4px 6px !important; }
+    .stock-card { padding: 5px 7px !important; margin-bottom: 2px !important; }
+    .news-card { padding: 5px 7px !important; margin-bottom: 3px !important; }
+    hr { margin: 3px 0 !important; }
+    [data-testid="stDataFrame"] { max-height: 100px !important; }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -159,8 +186,11 @@ hr {
 # 3. 게임 초기화
 # ==========================================
 
-def initialize_game():
-    st.session_state.cash = STARTING_CASH
+def initialize_game(starting_cash=DEFAULT_STARTING_CASH):
+    starting_cash = max(1, int(starting_cash))
+    st.session_state.starting_cash = starting_cash
+    st.session_state.game_started = True
+    st.session_state.cash = starting_cash
 
     st.session_state.prices = {
         **STOCKS,
@@ -198,8 +228,10 @@ def initialize_game():
     })
 
 
-if "cash" not in st.session_state:
-    initialize_game()
+if "game_started" not in st.session_state:
+    st.session_state.game_started = False
+    st.session_state.starting_cash = DEFAULT_STARTING_CASH
+    st.session_state.pending_news_event = None
 
 
 # ==========================================
@@ -396,10 +428,10 @@ NEWS_EVENTS = [
     {"asset": "엔비디아", "news": "대형 고객사 CAPEX 재검토", "min_change": -0.20, "max_change": -0.10},
 
     # 엔비디아 - 추가된 복합 변수 뉴스
-    {"asset": "엔비디아", "news": "클라우드 사업자, AI 인프라 투자 집행 시점 조정", "min_change": -0.18, "max_change": 0.20},
-    {"asset": "엔비디아", "news": "차세대 가속기 공급 확대…수익성 검증은 미완", "min_change": -0.17, "max_change": 0.19},
-    {"asset": "엔비디아", "news": "수출 규정 재검토 속 중국향 제품 전략 수정", "min_change": -0.20, "max_change": 0.17},
-    {"asset": "엔비디아", "news": "대형 고객사 자체 칩 개발과 외부 조달 병행", "min_change": -0.19, "max_change": 0.18},
+    {"asset": "엔비디아", "news": "클라우드 사업자, AI 인프라 투자 집행 시점 조정", "min_change": -0.08, "max_change": 0.10},
+    {"asset": "엔비디아", "news": "차세대 가속기 공급 확대…수익성 검증은 미완", "min_change": -0.07, "max_change": 0.09},
+    {"asset": "엔비디아", "news": "수출 규정 재검토 속 중국향 제품 전략 수정", "min_change": -0.10, "max_change": 0.07},
+    {"asset": "엔비디아", "news": "대형 고객사 자체 칩 개발과 외부 조달 병행", "min_change": -0.09, "max_change": 0.08},
 
     # 테슬라 - 기존 호재 및 악재
     {"asset": "테슬라", "news": "전기차 수요 둔화 우려 완화", "min_change": 0.03, "max_change": 0.10},
@@ -408,10 +440,10 @@ NEWS_EVENTS = [
     {"asset": "테슬라", "news": "수입차 관세 부담 급증", "min_change": -0.20, "max_change": -0.10},
 
     # 테슬라 - 추가된 복합 변수 뉴스
-    {"asset": "테슬라", "news": "차량 인도량 반등에도 평균 판매단가 하락 지속", "min_change": -0.19, "max_change": 0.22},
-    {"asset": "테슬라", "news": "자율주행 규제 완화 논의…책임 기준은 불확실", "min_change": -0.18, "max_change": 0.22},
-    {"asset": "테슬라", "news": "에너지저장장치 수주 증가와 원가 부담 동반", "min_change": -0.12, "max_change": 0.19},
-    {"asset": "테슬라", "news": "신공장 가동률 개선 전망 속 초기 비용 확대", "min_change": -0.15, "max_change": 0.19},
+    {"asset": "테슬라", "news": "차량 인도량 반등에도 평균 판매단가 하락 지속", "min_change": -0.09, "max_change": 0.08},
+    {"asset": "테슬라", "news": "자율주행 규제 완화 논의…책임 기준은 불확실", "min_change": -0.08, "max_change": 0.10},
+    {"asset": "테슬라", "news": "에너지저장장치 수주 증가와 원가 부담 동반", "min_change": -0.07, "max_change": 0.09},
+    {"asset": "테슬라", "news": "신공장 가동률 개선 전망 속 초기 비용 확대", "min_change": -0.10, "max_change": 0.07},
 
     # 삼성 - 기존 호재 및 악재
     {"asset": "삼성", "news": "차세대 메모리 공급계약 확대", "min_change": 0.03, "max_change": 0.10},
@@ -420,10 +452,10 @@ NEWS_EVENTS = [
     {"asset": "삼성", "news": "모바일 품질 신뢰도 타격", "min_change": -0.20, "max_change": -0.10},
 
     # 삼성 - 추가된 복합 변수 뉴스
-    {"asset": "삼성", "news": "HBM 공급 승인 임박설…양산 수율은 미확인", "min_change": -0.18, "max_change": 0.22},
-    {"asset": "삼성", "news": "파운드리 수주 회복 조짐과 고정비 부담 공존", "min_change": -0.14, "max_change": 0.18},
-    {"asset": "삼성", "news": "메모리 가격 반등 전망…재고 정상화 속도 변수", "min_change": -0.17, "max_change": 0.19},
-    {"asset": "삼성", "news": "대규모 설비투자 계획 공개, 현금흐름 전망 엇갈려", "min_change": -0.20, "max_change": 0.27}
+    {"asset": "삼성", "news": "HBM 공급 승인 임박설…양산 수율은 미확인", "min_change": -0.08, "max_change": 0.10},
+    {"asset": "삼성", "news": "파운드리 수주 회복 조짐과 고정비 부담 공존", "min_change": -0.09, "max_change": 0.08},
+    {"asset": "삼성", "news": "메모리 가격 반등 전망…재고 정상화 속도 변수", "min_change": -0.07, "max_change": 0.09},
+    {"asset": "삼성", "news": "대규모 설비투자 계획 공개, 현금흐름 전망 엇갈려", "min_change": -0.10, "max_change": 0.07}
 ]
 
 
@@ -533,9 +565,32 @@ def next_turn():
 
 st.title("STOCK TYCOON")
 st.caption(
-    "가상의 주식 투자 시뮬레이션 | 시작 자금 1,000,000원"
+    f"가상의 주식 투자 시뮬레이션 | 시작 자금 {format_money(st.session_state.starting_cash)}"
+    if st.session_state.game_started
+    else "가상의 주식 투자 시뮬레이션 | 시작 자금을 설정하세요"
 )
 
+# 게임 시작 전 초기 자본 설정 화면
+if not st.session_state.game_started:
+    st.markdown("## 투자 시작 설정")
+    st.write("이번 게임에서 사용할 초기 보유 금액을 입력하세요.")
+    with st.form("start_game_form"):
+        starting_cash_input = st.number_input(
+            "초기 보유 금액 (원)",
+            min_value=100_000,
+            max_value=100_000_000,
+            value=DEFAULT_STARTING_CASH,
+            step=100_000,
+            format="%d"
+        )
+        st.caption("최소 10만 원 · 최대 1억 원 · 10턴 동안 투자")
+        start_submitted = st.form_submit_button(
+            "게임 시작", type="primary", use_container_width=True
+        )
+        if start_submitted:
+            initialize_game(starting_cash_input)
+            st.rerun()
+    st.stop()
 
 # ==========================================
 # 13. 게임 종료 화면
@@ -544,8 +599,8 @@ st.caption(
 if st.session_state.game_over:
 
     total = get_total_asset()
-    profit = total - STARTING_CASH
-    rate = profit / STARTING_CASH * 100
+    profit = total - st.session_state.starting_cash
+    rate = profit / st.session_state.starting_cash * 100
 
     st.subheader("투자 종료")
 
@@ -592,7 +647,7 @@ if st.session_state.game_over:
     )
 
     if st.button("새 게임 시작", use_container_width=True):
-        initialize_game()
+        initialize_game(st.session_state.starting_cash)
         st.rerun()
 
     st.stop()
@@ -603,7 +658,7 @@ if st.session_state.game_over:
 # ==========================================
 
 total_asset = get_total_asset()
-profit = total_asset - STARTING_CASH
+profit = total_asset - st.session_state.starting_cash
 
 m1, m2, m3, m4, m5, m6 = st.columns(6)
 
@@ -639,7 +694,7 @@ m6.metric(
     format_money(st.session_state.loan_debt)
 )
 
-st.progress(st.session_state.turn / MAX_TURNS)
+st.progress(st.session_state.turn / MAX_TURNS, text=f"진행률 {st.session_state.turn}/{MAX_TURNS}")
 
 
 # ==========================================
@@ -946,7 +1001,7 @@ with right:
         "게임 초기화",
         use_container_width=True
     ):
-        initialize_game()
+        initialize_game(st.session_state.starting_cash)
         st.rerun()
 
 
@@ -954,14 +1009,12 @@ with right:
 # 20. 가격 변화 그래프
 # ==========================================
 
-st.divider()
-st.subheader("가격 변화 그래프")
+with st.expander("가격 변화 그래프 보기", expanded=False):
+    chart_df = pd.DataFrame(
+        st.session_state.price_history
+    )
 
-chart_df = pd.DataFrame(
-    st.session_state.price_history
-)
-
-st.line_chart(
-    chart_df,
-    height=170
-)
+    st.line_chart(
+        chart_df,
+        height=130
+    )
