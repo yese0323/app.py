@@ -176,8 +176,9 @@ def initialize_game():
     st.session_state.price_history = []
 
     st.session_state.market_news = (
-        "시장이 개장했습니다. 투자를 시작하세요."
+        "시장 개장 전. 첫 번째 시장 동향을 확인하세요."
     )
+    st.session_state.pending_news_event = None
 
     st.session_state.doge_notice = (
         "도지코인은 매 턴 독립적으로 변동합니다."
@@ -389,23 +390,38 @@ def take_loan(amount):
 
 NEWS_EVENTS = [
     # 엔비디아
-    {"asset": "엔비디아", "news": "젠슨황의 기분이 좋습니다", "min_change": 0.01, "max_change": 0.20},
-    {"asset": "엔비디아", "news": "젠슨황이 복귀했습니다", "min_change": 0.03, "max_change": 0.25},
-    {"asset": "엔비디아", "news": "젠슨황의 기분이 좋을까요?", "min_change": -0.30, "max_change": -0.10},
-    {"asset": "엔비디아", "news": "젠슨황이 잘 하고 있습니다", "min_change": -0.30, "max_change": -0.10},
+    {"asset": "엔비디아", "news": "가속기 수요, 공급능력 상회", "min_change": 0.03, "max_change": 0.10},
+    {"asset": "엔비디아", "news": "핵심 경영진 복귀설 재부상", "min_change": 0.05, "max_change": 0.15},
+    {"asset": "엔비디아", "news": "차세대 칩 수율, 시장 기대 하회", "min_change": -0.12, "max_change": -0.05},
+    {"asset": "엔비디아", "news": "대형 고객사 CAPEX 재검토", "min_change": -0.20, "max_change": -0.10},
 
     # 테슬라
-    {"asset": "테슬라", "news": "일론머스크가 기분이 좋습니다", "min_change": 0.01, "max_change": 0.20},
-    {"asset": "테슬라", "news": "테슬라가 로드스터를 출시했습니다", "min_change": 0.03, "max_change": 0.25},
-    {"asset": "테슬라", "news": "스페이스X의 로켓이 미사일이 되었습니다", "min_change": -0.25, "max_change": -0.05},
-    {"asset": "테슬라", "news": "테슬라가 관세 200%를 받습니다", "min_change": -0.20, "max_change": -0.05},
+    {"asset": "테슬라", "news": "전기차 수요 둔화 우려 완화", "min_change": 0.03, "max_change": 0.10},
+    {"asset": "테슬라", "news": "차세대 로드스터 양산 가시화", "min_change": 0.05, "max_change": 0.15},
+    {"asset": "테슬라", "news": "우주사업 규제 변수 확대", "min_change": -0.12, "max_change": -0.05},
+    {"asset": "테슬라", "news": "수입차 관세 부담 급증", "min_change": -0.20, "max_change": -0.10},
 
     # 삼성
-    {"asset": "삼성", "news": "삼성이 갤럭시S28을 출시했습니다", "min_change": 0.01, "max_change": 0.20},
-    {"asset": "삼성", "news": "아이폰의 아이폰 듀오에 내구성 문제가 생겼습니다", "min_change": 0.03, "max_change": 0.25},
-    {"asset": "삼성", "news": "이재용이 이재명의 견제를 받습니다", "min_change": -0.30, "max_change": -0.05},
-    {"asset": "삼성", "news": "삼성의 휴대폰이 폭발했습니다", "min_change": -0.30, "max_change": -0.05}
+    {"asset": "삼성", "news": "차세대 메모리 공급계약 확대", "min_change": 0.03, "max_change": 0.10},
+    {"asset": "삼성", "news": "경쟁사 신제품 품질 논란 확산", "min_change": 0.05, "max_change": 0.15},
+    {"asset": "삼성", "news": "반도체 정책 리스크 재부각", "min_change": -0.12, "max_change": -0.05},
+    {"asset": "삼성", "news": "모바일 품질 신뢰도 타격", "min_change": -0.20, "max_change": -0.10}
 ]
+
+
+def prepare_market_news():
+    # 다음 턴에 반영될 뉴스를 미리 선정해 공개
+    event = random.choice(NEWS_EVENTS)
+    st.session_state.pending_news_event = event
+    st.session_state.market_news = (
+        f"[{event['asset']}] {event['news']}"
+    )
+
+
+# 첫 게임 시작 또는 초기화 직후 첫 번째 뉴스를 준비
+if st.session_state.pending_news_event is None:
+    prepare_market_news()
+
 # ==========================================
 # 11. 다음 턴 진행
 # ==========================================
@@ -418,26 +434,25 @@ def next_turn():
         st.session_state.game_over = True
         st.rerun()
 
-    # 일반 주식 기본 가격 변동을 먼저 적용
+    # 일반 주식 기본 가격 변동: 상승보다 하락 폭을 조금 더 크게 설정
     for asset in STOCKS:
-        random_change = random.uniform(-0.05, 0.05)
+        if random.random() < 0.5:
+            random_change = random.uniform(0.01, 0.05)
+        else:
+            random_change = random.uniform(-0.07, -0.02)
+
         new_price = int(
             st.session_state.prices[asset] * (1 + random_change)
         )
         st.session_state.prices[asset] = max(1, new_price)
 
-    # 기본 가격 변동이 끝난 뒤 뉴스 효과를 적용하고, 가격 변경 후 뉴스를 공개
-    event = random.choice(NEWS_EVENTS)
+    # 미리 공개된 뉴스를 이번 턴의 주가에 반영
+    event = st.session_state.pending_news_event
     news_asset = event["asset"]
     news_change = random.uniform(event["min_change"], event["max_change"])
     news_base_price = st.session_state.prices[news_asset]
     news_new_price = int(news_base_price * (1 + news_change))
     st.session_state.prices[news_asset] = max(1, news_new_price)
-
-    st.session_state.market_news = (
-        f"[{news_asset}] {event['news']} "
-        f"(주가 변동: {news_change * 100:+.1f}%)"
-    )
 
     # 도지코인 독립 이벤트
     if not st.session_state.dogecoin_delisted:
@@ -485,9 +500,11 @@ def next_turn():
         for asset in ALL_ASSETS
     })
 
-    # 게임 종료
+    # 게임 종료가 아니라면 다음 턴에 분석할 뉴스를 미리 공개
     if st.session_state.turn >= MAX_TURNS:
         st.session_state.game_over = True
+    else:
+        prepare_market_news()
 
     st.rerun()
 
@@ -880,7 +897,8 @@ st.divider()
 left, middle, right = st.columns([1.2, 1, 0.8])
 
 with left:
-    st.subheader("시장 뉴스")
+    st.subheader("다음 턴 시장 뉴스")
+    st.caption("뉴스를 분석한 뒤 다음 턴을 진행하세요. 주가 변동은 다음 턴에 반영됩니다.")
     st.info(st.session_state.market_news)
 
 with middle:
