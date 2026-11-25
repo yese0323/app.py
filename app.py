@@ -56,13 +56,29 @@ div[data-testid="stMetricValue"] { font-size: 14px !important; }
 div[data-testid="stMetricLabel"] { font-size: 9px !important; }
 .stButton button { min-height: 24px !important; padding: 0 4px !important; font-size: 9px !important; }
 .stNumberInput input { height: 27px !important; font-size: 10px !important; }
-.doge-panel, .doge-dead {
+.doge-panel {
+    background: linear-gradient(115deg, #fff3a6 0%, #ffd84d 48%, #f5b800 100%) !important;
+    border: 2px solid #d99a00 !important;
+    color: #352600 !important;
+    padding: 6px 9px !important; margin: 2px 0 !important;
+    border-radius: 9px;
+    box-shadow: 0 2px 10px rgba(218, 160, 0, 0.28);
+}
+.doge-dead {
+    background: linear-gradient(115deg, #350909, #790d0d, #a51c1c) !important;
+    border: 2px solid #ff5252 !important;
+    color: white !important;
     padding: 6px 9px !important; margin: 2px 0 !important;
     border-radius: 9px;
 }
-.doge-title { font-size: 15px !important; }
-.doge-price { font-size: 20px !important; margin-top: 0 !important; }
-.doge-sub, .doge-warning { font-size: 9px !important; margin-top: 2px !important; padding: 3px 5px !important; }
+.doge-title { font-size: 15px !important; font-weight: 900 !important; color: #4a3500 !important; }
+.doge-price { font-size: 20px !important; margin-top: 0 !important; color: #2d2100 !important; font-weight: 900 !important; }
+.doge-sub, .doge-warning { font-size: 9px !important; margin-top: 2px !important; padding: 3px 5px !important; color: #3d2c00 !important; }
+.doge-warning {
+    background: rgba(255,255,255,0.38) !important;
+    border: 1px solid rgba(110,75,0,0.22) !important;
+    border-radius: 5px;
+}
 .stock-card { padding: 4px 6px !important; margin-bottom: 1px !important; border-radius: 7px; }
 .news-card { padding: 4px 6px !important; margin-bottom: 2px !important; }
 .loan-panel { padding: 6px 8px !important; margin: 2px 0 !important; }
