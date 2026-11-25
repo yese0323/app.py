@@ -333,10 +333,10 @@ NEWS_EVENTS = [
     {"asset": "엔비디아", "news": "대형 고객사 CAPEX 재검토", "min_change": -0.20, "max_change": -0.10},
 
     # 엔비디아 - 추가된 복합 변수 뉴스
-    {"asset": "엔비디아", "news": "클라우드 사업자, AI 인프라 투자 집행 시점 조정", "min_change": -0.08, "max_change": 0.10},
-    {"asset": "엔비디아", "news": "차세대 가속기 공급 확대…수익성 검증은 미완", "min_change": -0.07, "max_change": 0.09},
-    {"asset": "엔비디아", "news": "수출 규정 재검토 속 중국향 제품 전략 수정", "min_change": -0.10, "max_change": 0.07},
-    {"asset": "엔비디아", "news": "대형 고객사 자체 칩 개발과 외부 조달 병행", "min_change": -0.09, "max_change": 0.08},
+    {"asset": "엔비디아", "news": "클라우드 사업자, AI 인프라 투자 집행 시점 조정", "min_change": -0.18, "max_change": 0.20},
+    {"asset": "엔비디아", "news": "차세대 가속기 공급 확대…수익성 검증은 미완", "min_change": -0.17, "max_change": 0.19},
+    {"asset": "엔비디아", "news": "수출 규정 재검토 속 중국향 제품 전략 수정", "min_change": -0.20, "max_change": 0.17},
+    {"asset": "엔비디아", "news": "대형 고객사 자체 칩 개발과 외부 조달 병행", "min_change": -0.19, "max_change": 0.18},
 
     # 테슬라 - 기존 호재 및 악재
     {"asset": "테슬라", "news": "전기차 수요 둔화 우려 완화", "min_change": 0.03, "max_change": 0.10},
@@ -345,10 +345,10 @@ NEWS_EVENTS = [
     {"asset": "테슬라", "news": "수입차 관세 부담 급증", "min_change": -0.20, "max_change": -0.10},
 
     # 테슬라 - 추가된 복합 변수 뉴스
-    {"asset": "테슬라", "news": "차량 인도량 반등에도 평균 판매단가 하락 지속", "min_change": -0.09, "max_change": 0.08},
-    {"asset": "테슬라", "news": "자율주행 규제 완화 논의…책임 기준은 불확실", "min_change": -0.08, "max_change": 0.10},
-    {"asset": "테슬라", "news": "에너지저장장치 수주 증가와 원가 부담 동반", "min_change": -0.07, "max_change": 0.09},
-    {"asset": "테슬라", "news": "신공장 가동률 개선 전망 속 초기 비용 확대", "min_change": -0.10, "max_change": 0.07},
+    {"asset": "테슬라", "news": "차량 인도량 반등에도 평균 판매단가 하락 지속", "min_change": -0.19, "max_change": 0.22},
+    {"asset": "테슬라", "news": "자율주행 규제 완화 논의…책임 기준은 불확실", "min_change": -0.18, "max_change": 0.22},
+    {"asset": "테슬라", "news": "에너지저장장치 수주 증가와 원가 부담 동반", "min_change": -0.12, "max_change": 0.19},
+    {"asset": "테슬라", "news": "신공장 가동률 개선 전망 속 초기 비용 확대", "min_change": -0.15, "max_change": 0.19},
 
     # 삼성 - 기존 호재 및 악재
     {"asset": "삼성", "news": "차세대 메모리 공급계약 확대", "min_change": 0.03, "max_change": 0.10},
@@ -357,10 +357,11 @@ NEWS_EVENTS = [
     {"asset": "삼성", "news": "모바일 품질 신뢰도 타격", "min_change": -0.20, "max_change": -0.10},
 
     # 삼성 - 추가된 복합 변수 뉴스
-    {"asset": "삼성", "news": "HBM 공급 승인 임박설…양산 수율은 미확인", "min_change": -0.08, "max_change": 0.10},
-    {"asset": "삼성", "news": "파운드리 수주 회복 조짐과 고정비 부담 공존", "min_change": -0.09, "max_change": 0.08},
-    {"asset": "삼성", "news": "메모리 가격 반등 전망…재고 정상화 속도 변수", "min_change": -0.07, "max_change": 0.09},
-    {"asset": "삼성", "news": "대규모 설비투자 계획 공개, 현금흐름 전망 엇갈려", "min_change": -0.10, "max_change": 0.07}
+    {"asset": "삼성", "news": "HBM 공급 승인 임박설…양산 수율은 미확인", "min_change": -0.18, "max_change": 0.22},
+    {"asset": "삼성", "news": "파운드리 수주 회복 조짐과 고정비 부담 공존", "min_change": -0.14, "max_change": 0.18},
+    {"asset": "삼성", "news": "메모리 가격 반등 전망…재고 정상화 속도 변수", "min_change": -0.17, "max_change": 0.19},
+    {"asset": "삼성", "news": "대규모 설비투자 계획 공개, 현금흐름 전망 엇갈려", "min_change": -0.20, "max_change": 0.27}
+
 ]
 
 
