@@ -390,21 +390,21 @@ def take_loan(amount):
 NEWS_EVENTS = [
     # 엔비디아
     {"asset": "엔비디아", "news": "젠슨황의 기분이 좋습니다", "min_change": 0.01, "max_change": 0.20},
-    {"asset": "엔비디아", "news": "젠슨황이 복귀했습니다", "min_change": 0.01, "max_change": 0.25},
+    {"asset": "엔비디아", "news": "젠슨황이 복귀했습니다", "min_change": 0.03, "max_change": 0.25},
     {"asset": "엔비디아", "news": "젠슨황의 기분이 좋을까요?", "min_change": -0.30, "max_change": -0.10},
     {"asset": "엔비디아", "news": "젠슨황이 잘 하고 있습니다", "min_change": -0.30, "max_change": -0.10},
 
     # 테슬라
     {"asset": "테슬라", "news": "일론머스크가 기분이 좋습니다", "min_change": 0.01, "max_change": 0.20},
-    {"asset": "테슬라", "news": "테슬라가 로드스터를 출시했습니다", "min_change": 0.01, "max_change": 0.30},
-    {"asset": "테슬라", "news": "스페이스X의 로켓이 미사일이 되었습니다", "min_change": -0.30, "max_change": -0.10},
-    {"asset": "테슬라", "news": "테슬라가 관세 200%를 받습니다", "min_change": -0.40, "max_change": -0.10},
+    {"asset": "테슬라", "news": "테슬라가 로드스터를 출시했습니다", "min_change": 0.03, "max_change": 0.25},
+    {"asset": "테슬라", "news": "스페이스X의 로켓이 미사일이 되었습니다", "min_change": -0.25, "max_change": -0.05},
+    {"asset": "테슬라", "news": "테슬라가 관세 200%를 받습니다", "min_change": -0.20, "max_change": -0.05},
 
     # 삼성
     {"asset": "삼성", "news": "삼성이 갤럭시S28을 출시했습니다", "min_change": 0.01, "max_change": 0.20},
-    {"asset": "삼성", "news": "아이폰의 아이폰 듀오에 내구성 문제가 생겼습니다", "min_change": 0.01, "max_change": 0.15},
-    {"asset": "삼성", "news": "이재용이 이재명의 견제를 받습니다", "min_change": -0.30, "max_change": -0.10},
-    {"asset": "삼성", "news": "삼성의 휴대폰이 폭발했습니다", "min_change": -0.30, "max_change": -0.10}
+    {"asset": "삼성", "news": "아이폰의 아이폰 듀오에 내구성 문제가 생겼습니다", "min_change": 0.03, "max_change": 0.25},
+    {"asset": "삼성", "news": "이재용이 이재명의 견제를 받습니다", "min_change": -0.30, "max_change": -0.05},
+    {"asset": "삼성", "news": "삼성의 휴대폰이 폭발했습니다", "min_change": -0.30, "max_change": -0.05}
 ]
 # ==========================================
 # 11. 다음 턴 진행
