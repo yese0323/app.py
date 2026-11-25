@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 DEFAULT_STARTING_CASH = 1_000_000
-MAX_TURNS = 10
+MAX_TURNS = 5
 
 MAX_LOAN = 500_000
 
@@ -36,147 +36,52 @@ ALL_ASSETS = list(STOCKS.keys()) + [DOGECOIN]
 
 st.markdown("""
 <style>
-header, footer, #MainMenu {
-    visibility: hidden;
-}
-
+header, footer, #MainMenu { visibility: hidden; }
 .block-container {
-    padding-top: 0.5rem;
-    padding-bottom: 0.3rem;
-    padding-left: 1.2rem;
-    padding-right: 1.2rem;
-    max-width: 100%;
+    padding: 0.25rem 0.55rem 0.2rem 0.55rem !important;
+    max-width: 100% !important;
 }
-
-h1 {
-    font-size: 25px !important;
-    margin-bottom: 2px !important;
-}
-
-h2 {
-    font-size: 19px !important;
-}
-
-h3 {
-    font-size: 16px !important;
-}
-
+h1 { font-size: 21px !important; margin: 0 0 2px 0 !important; }
+h2 { font-size: 15px !important; margin: 2px 0 !important; }
+h3 { font-size: 12px !important; margin: 1px 0 !important; }
+p, label, .stCaption, [data-testid="stMarkdownContainer"] { font-size: 10px !important; }
+div[data-testid="stVerticalBlock"] { gap: 0.12rem !important; }
+div[data-testid="stHorizontalBlock"] { gap: 0.35rem !important; }
 div[data-testid="stMetric"] {
-    padding: 7px 10px;
+    padding: 2px 5px !important;
     border: 1px solid rgba(128,128,128,0.25);
+    border-radius: 7px;
+}
+div[data-testid="stMetricValue"] { font-size: 14px !important; }
+div[data-testid="stMetricLabel"] { font-size: 9px !important; }
+.stButton button { min-height: 24px !important; padding: 0 4px !important; font-size: 9px !important; }
+.stNumberInput input { height: 27px !important; font-size: 10px !important; }
+.doge-panel, .doge-dead {
+    padding: 6px 9px !important; margin: 2px 0 !important;
     border-radius: 9px;
 }
-
-div[data-testid="stMetricValue"] {
-    font-size: 20px;
+.doge-title { font-size: 15px !important; }
+.doge-price { font-size: 20px !important; margin-top: 0 !important; }
+.doge-sub, .doge-warning { font-size: 9px !important; margin-top: 2px !important; padding: 3px 5px !important; }
+.stock-card { padding: 4px 6px !important; margin-bottom: 1px !important; border-radius: 7px; }
+.news-card { padding: 4px 6px !important; margin-bottom: 2px !important; }
+.loan-panel { padding: 6px 8px !important; margin: 2px 0 !important; }
+hr { margin: 3px 0 !important; }
+[data-testid="stProgress"] { height: 5px !important; }
+[data-testid="stAlert"] { padding: 5px 8px !important; }
+[data-testid="stExpander"] details { padding: 2px 6px !important; }
+@media screen and (orientation: landscape) and (min-width: 700px) {
+    .block-container { padding: 0.15rem 0.4rem 0.1rem 0.4rem !important; }
 }
-
-div[data-testid="stVerticalBlock"] {
-    gap: 0.35rem;
-}
-
-.stButton button {
-    min-height: 34px;
-    font-size: 12px;
-}
-
-.doge-panel {
-    background: linear-gradient(115deg, #34270b, #76500d, #b77a13);
-    border: 2px solid #e5ad35;
-    border-radius: 16px;
-    padding: 18px 20px;
-    color: white;
-    margin: 8px 0 10px 0;
-    box-shadow: 0 4px 16px rgba(190,130,20,0.22);
-}
-
-.doge-title {
-    font-size: 23px;
-    font-weight: 900;
-    letter-spacing: 1px;
-}
-
-.doge-price {
-    font-size: 35px;
-    font-weight: 900;
-    margin-top: 5px;
-    line-height: 1.2;
-}
-
-.doge-sub {
-    font-size: 12px;
-    opacity: 0.9;
-    margin-top: 5px;
-}
-
-.doge-warning {
-    background: rgba(0,0,0,0.22);
-    border: 1px solid rgba(255,255,255,0.35);
-    border-radius: 9px;
-    padding: 8px 10px;
-    font-size: 12px;
-    margin-top: 10px;
-}
-
-.doge-dead {
-    background: linear-gradient(115deg, #350909, #790d0d, #a51c1c);
-    border: 2px solid #ff5252;
-    border-radius: 16px;
-    padding: 18px 20px;
-    color: white;
-    margin: 8px 0 10px 0;
-}
-
-.stock-card {
-    border: 1px solid rgba(128,128,128,0.35);
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 5px;
-}
-
-.news-card {
-    border: 1px solid rgba(128,128,128,0.3);
-    border-radius: 9px;
-    padding: 9px 12px;
-    margin-bottom: 8px;
-}
-
-.loan-panel {
-    border: 2px solid #d69b32;
-    border-radius: 12px;
-    padding: 14px;
-    margin: 10px 0;
-}
-
-hr {
-    margin: 6px 0 !important;
-}
-
-/* 태블릿 가로 화면 최적화 */
-@media screen and (orientation: landscape) and (min-width: 900px) {
-    .block-container {
-        padding: 0.25rem 0.65rem 0.2rem 0.65rem !important;
-        max-width: 100% !important;
-    }
-    h1 { font-size: 21px !important; margin: 0 !important; }
-    h2 { font-size: 16px !important; margin: 0.15rem 0 !important; }
-    h3 { font-size: 13px !important; margin: 0.1rem 0 !important; }
-    p, label, .stCaption, [data-testid="stMarkdownContainer"] {
-        font-size: 11px !important;
-    }
-    div[data-testid="stVerticalBlock"] { gap: 0.12rem !important; }
-    div[data-testid="stMetric"] { padding: 3px 6px !important; }
-    div[data-testid="stMetricValue"] { font-size: 15px !important; }
-    div[data-testid="stMetricLabel"] { font-size: 10px !important; }
-    .stButton button { min-height: 27px !important; padding: 0 5px !important; font-size: 10px !important; }
-    .doge-panel, .doge-dead { padding: 8px 11px !important; margin: 3px 0 !important; }
-    .doge-title { font-size: 17px !important; }
-    .doge-price { font-size: 23px !important; margin-top: 1px !important; }
-    .doge-sub, .doge-warning { font-size: 10px !important; margin-top: 3px !important; padding: 4px 6px !important; }
-    .stock-card { padding: 5px 7px !important; margin-bottom: 2px !important; }
-    .news-card { padding: 5px 7px !important; margin-bottom: 3px !important; }
-    hr { margin: 3px 0 !important; }
-    [data-testid="stDataFrame"] { max-height: 100px !important; }
+@media screen and (max-height: 800px) and (orientation: landscape) {
+    .block-container { padding-top: 0.05rem !important; padding-bottom: 0.05rem !important; }
+    h1 { font-size: 18px !important; }
+    h2 { font-size: 13px !important; }
+    p, label, .stCaption, [data-testid="stMarkdownContainer"] { font-size: 9px !important; }
+    div[data-testid="stMetricValue"] { font-size: 12px !important; }
+    .doge-panel, .doge-dead { padding: 4px 7px !important; }
+    .doge-price { font-size: 17px !important; }
+    .stButton button { min-height: 21px !important; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -583,7 +488,7 @@ if not st.session_state.game_started:
             step=100_000,
             format="%d"
         )
-        st.caption("최소 10만 원 · 최대 1억 원 · 10턴 동안 투자")
+        st.caption("최소 10만 원 · 최대 1억 원 · 5턴 동안 투자")
         start_submitted = st.form_submit_button(
             "게임 시작", type="primary", use_container_width=True
         )
@@ -654,367 +559,140 @@ if st.session_state.game_over:
 
 
 # ==========================================
-# 14. 상단 자산 정보
+# 14. 한 화면 대시보드 (태블릿 가로형)
 # ==========================================
 
 total_asset = get_total_asset()
 profit = total_asset - st.session_state.starting_cash
 
+# 상단 자산 요약
 m1, m2, m3, m4, m5, m6 = st.columns(6)
-
-m1.metric(
-    "보유 현금",
-    format_money(st.session_state.cash)
-)
-
-m2.metric(
-    "총 순자산",
-    format_money(total_asset)
-)
-
-m3.metric(
-    "수익",
-    format_money(profit)
-)
-
-m4.metric(
-    "진행 턴",
-    f"{st.session_state.turn}/{MAX_TURNS}"
-)
-
-held = sum(
-    1 for q in st.session_state.holdings.values()
-    if q > 0
-)
-
+m1.metric("보유 현금", format_money(st.session_state.cash))
+m2.metric("총 순자산", format_money(total_asset))
+m3.metric("수익", format_money(profit))
+m4.metric("진행 턴", f"{st.session_state.turn}/{MAX_TURNS}")
+held = sum(1 for q in st.session_state.holdings.values() if q > 0)
 m5.metric("보유 종목", f"{held}개")
+m6.metric("누적 대출", format_money(st.session_state.loan_debt))
+st.progress(st.session_state.turn / MAX_TURNS)
 
-m6.metric(
-    "누적 대출",
-    format_money(st.session_state.loan_debt)
-)
+# 가로 화면을 좌측(거래)과 우측(뉴스/진행)으로 분리
+trade_area, info_area = st.columns([2.25, 1], gap="small")
 
-st.progress(st.session_state.turn / MAX_TURNS, text=f"진행률 {st.session_state.turn}/{MAX_TURNS}")
+with trade_area:
+    # 도지코인 패널
+    st.markdown("### SPECIAL ASSET · DOGECOIN")
+    doge_price = st.session_state.prices[DOGECOIN]
+    doge_quantity = st.session_state.holdings[DOGECOIN]
+    doge_value = doge_price * doge_quantity
 
-
-# ==========================================
-# 15. 대출 안내 화면
-# ==========================================
-
-# 현금이 0원이거나 순자산이 0원 이하일 때 표시
-loan_condition = get_total_asset() <= 0
-
-remaining_loan = get_remaining_loan()
-
-if loan_condition:
-
-    st.markdown("""
-    <div class="loan-panel">
-        <h3>자금 부족!</h3>
-        <p>
-            현재 투자 자금이 부족합니다.<br>
-            추가 자금이 필요하다면 대출을 이용할 수 있습니다.
-        </p>
-        <h3>대출하시겠습니까?</h3>
-        <p>최대 대출 가능 금액: 500,000원</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if remaining_loan > 0:
-
-        if not st.session_state.loan_prompt_open:
-
-            if st.button(
-                "대출 신청하기",
-                type="primary",
-                use_container_width=True
-            ):
-                st.session_state.loan_prompt_open = True
-                st.rerun()
-
-        else:
-
-            st.subheader("대출 금액 선택")
-
-            loan_amount = st.number_input(
-                "대출받을 금액",
-                min_value=1,
-                max_value=remaining_loan,
-                value=min(100000, remaining_loan),
-                step=10000,
-                key="loan_amount_input"
-            )
-
-            st.caption(
-                f"남은 대출 한도: {format_money(remaining_loan)}"
-            )
-
-            loan_col1, loan_col2 = st.columns(2)
-
-            with loan_col1:
-                if st.button(
-                    "대출 확정",
-                    type="primary",
-                    use_container_width=True
-                ):
-                    take_loan(loan_amount)
-
-            with loan_col2:
-                if st.button(
-                    "취소",
-                    use_container_width=True
-                ):
-                    st.session_state.loan_prompt_open = False
-                    st.rerun()
-
-    else:
-        st.error(
-            "대출 한도 500,000원을 모두 사용했습니다. "
-            "추가 대출은 불가능합니다."
-        )
-        # ==========================================
-# 16. 도지코인 메인 패널
-# ==========================================
-
-st.markdown("## SPECIAL ASSET")
-
-doge_price = st.session_state.prices[DOGECOIN]
-doge_quantity = st.session_state.holdings[DOGECOIN]
-doge_value = doge_price * doge_quantity
-
-if st.session_state.dogecoin_delisted:
-
-    st.markdown(
-        f"""
-        <div class="doge-dead">
-            <div class="doge-title">DOGECOIN | 상장폐지</div>
-            <div class="doge-price">0원</div>
-            <div class="doge-sub">
-                거래가 영구 중단되었습니다.
-            </div>
-            <div class="doge-warning">
-                보유 수량: {doge_quantity}개 |
-                평가 금액: 0원<br>
-                이 게임에서는 도지코인을 다시 거래할 수 없습니다.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-else:
-
-    change = st.session_state.doge_last_change
-
-    st.markdown(
-        f"""
-        <div class="doge-panel">
-            <div class="doge-title">DOGECOIN</div>
-            <div class="doge-price">{format_money(doge_price)}</div>
-            <div class="doge-sub">
-                이번 턴 변동률: {change:+.1f}%
-                &nbsp; | &nbsp;
-                보유 수량: {doge_quantity}개
-                &nbsp; | &nbsp;
-                평가 금액: {format_money(doge_value)}
-            </div>
-            <div class="doge-warning">
-                상장폐지 위험: 매 턴 10% 확률
-                &nbsp; | &nbsp;
-                일반 뉴스와 무관하게 독립적으로 가격 변동
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# ==========================================
-# 17. 도지코인 거래 버튼
-# ==========================================
-
-if not st.session_state.dogecoin_delisted:
-
-    d1, d2, d3, d4, d5 = st.columns([1.2, 1, 1, 1, 1])
-
-    with d1:
-        doge_buy_quantity = st.number_input(
-            "도지코인 거래 수량",
-            min_value=1,
-            value=1,
-            key="doge_buy_quantity"
-        )
-
-    with d2:
-        if st.button(
-            "매수",
-            key="doge_buy",
-            use_container_width=True
-        ):
-            buy_stock(DOGECOIN, doge_buy_quantity)
-
-    with d3:
-        if st.button(
-            "매도",
-            key="doge_sell",
-            use_container_width=True,
-            disabled=doge_quantity <= 0
-        ):
-            sell_stock(
-                DOGECOIN,
-                min(doge_buy_quantity, doge_quantity)
-            )
-
-    with d4:
-        if st.button(
-            "풀매수",
-            key="doge_full_buy",
-            use_container_width=True
-        ):
-            buy_all(DOGECOIN)
-
-    with d5:
-        if st.button(
-            "풀매도",
-            key="doge_full_sell",
-            use_container_width=True,
-            disabled=doge_quantity <= 0
-        ):
-            sell_all(DOGECOIN)
-
-else:
-    st.error("도지코인은 상장폐지되어 모든 거래가 중단되었습니다.")
-
-
-# ==========================================
-# 18. 일반 주식 거래
-# ==========================================
-
-st.divider()
-st.subheader("일반 주식")
-
-stock_columns = st.columns(3)
-
-for index, asset in enumerate(STOCKS):
-
-    with stock_columns[index]:
-
-        price = st.session_state.prices[asset]
-        owned = st.session_state.holdings[asset]
-
+    if st.session_state.dogecoin_delisted:
         st.markdown(
-            f"""
-            <div class="stock-card">
-                <b>{asset}</b><br>
-                <span style="font-size:20px;font-weight:bold;">
-                    {format_money(price)}
-                </span><br>
-                <span style="font-size:12px;">
-                    보유: {owned}주
-                </span>
-            </div>
-            """,
-            unsafe_allow_html=True
+            f'''<div class="doge-dead">
+                <b>DOGECOIN | 상장폐지</b>　<strong style="font-size:19px">0원</strong><br>
+                <span>거래 영구 중단 · 보유 {doge_quantity}개 · 평가 {format_money(doge_value)}</span>
+            </div>''', unsafe_allow_html=True
         )
-
-        quantity = st.number_input(
-            "거래 수량",
-            min_value=1,
-            value=1,
-            key=f"stock_quantity_{index}"
+    else:
+        change = st.session_state.doge_last_change
+        st.markdown(
+            f'''<div class="doge-panel">
+                <span class="doge-title">DOGECOIN</span>
+                <span class="doge-price" style="margin-left:12px">{format_money(doge_price)}</span>
+                <div class="doge-sub">이번 턴 변동률 {change:+.1f}%　|　보유 {doge_quantity}개　|　평가 {format_money(doge_value)}</div>
+                <div class="doge-warning">상장폐지 위험: 매 턴 10%　|　일반 뉴스와 독립적으로 변동</div>
+            </div>''', unsafe_allow_html=True
         )
+        d1, d2, d3, d4, d5 = st.columns([1.2, 1, 1, 1, 1])
+        with d1:
+            doge_buy_quantity = st.number_input("도지 수량", min_value=1, value=1, key="doge_buy_quantity")
+        with d2:
+            if st.button("매수", key="doge_buy", use_container_width=True):
+                buy_stock(DOGECOIN, doge_buy_quantity)
+        with d3:
+            if st.button("매도", key="doge_sell", use_container_width=True, disabled=doge_quantity <= 0):
+                sell_stock(DOGECOIN, min(doge_buy_quantity, doge_quantity))
+        with d4:
+            if st.button("풀매수", key="doge_full_buy", use_container_width=True):
+                buy_all(DOGECOIN)
+        with d5:
+            if st.button("풀매도", key="doge_full_sell", use_container_width=True, disabled=doge_quantity <= 0):
+                sell_all(DOGECOIN)
 
-        b1, b2, b3, b4 = st.columns(4)
+    # 일반 주식 3종목을 가로 카드로 배치
+    st.markdown("### 일반 주식")
+    stock_columns = st.columns(3, gap="small")
+    for index, asset in enumerate(STOCKS):
+        with stock_columns[index]:
+            price = st.session_state.prices[asset]
+            owned = st.session_state.holdings[asset]
+            st.markdown(
+                f'''<div class="stock-card"><b>{asset}</b><br>
+                <strong style="font-size:16px">{format_money(price)}</strong><br>
+                <span>보유: {owned}주</span></div>''',
+                unsafe_allow_html=True
+            )
+            quantity = st.number_input("수량", min_value=1, value=1, key=f"stock_quantity_{index}")
+            b1, b2 = st.columns(2, gap="small")
+            with b1:
+                if st.button("매수", key=f"stock_buy_{index}", use_container_width=True):
+                    buy_stock(asset, quantity)
+                if st.button("풀매수", key=f"stock_full_buy_{index}", use_container_width=True):
+                    buy_all(asset)
+            with b2:
+                if st.button("매도", key=f"stock_sell_{index}", use_container_width=True, disabled=owned <= 0):
+                    sell_stock(asset, min(quantity, owned))
+                if st.button("풀매도", key=f"stock_full_sell_{index}", use_container_width=True, disabled=owned <= 0):
+                    sell_all(asset)
 
-        with b1:
-            if st.button(
-                "매수",
-                key=f"stock_buy_{index}",
-                use_container_width=True
-            ):
-                buy_stock(asset, quantity)
+with info_area:
+    # 순자산 0원 이하일 때만 대출 UI 표시
+    loan_condition = get_total_asset() <= 0
+    remaining_loan = get_remaining_loan()
+    if loan_condition:
+        st.markdown("### 자금 부족 · 대출")
+        st.warning("순자산이 0원 이하입니다. 대출을 이용할 수 있습니다.")
+        if remaining_loan > 0:
+            if not st.session_state.loan_prompt_open:
+                if st.button("대출 신청", type="primary", use_container_width=True):
+                    st.session_state.loan_prompt_open = True
+                    st.rerun()
+            else:
+                loan_amount = st.number_input(
+                    "대출 금액", min_value=1, max_value=remaining_loan,
+                    value=min(100000, remaining_loan), step=10000,
+                    key="loan_amount_input"
+                )
+                lc1, lc2 = st.columns(2)
+                with lc1:
+                    if st.button("대출 확정", type="primary", use_container_width=True):
+                        take_loan(loan_amount)
+                with lc2:
+                    if st.button("취소", use_container_width=True):
+                        st.session_state.loan_prompt_open = False
+                        st.rerun()
+        else:
+            st.error("대출 한도 500,000원을 모두 사용했습니다.")
 
-        with b2:
-            if st.button(
-                "매도",
-                key=f"stock_sell_{index}",
-                use_container_width=True,
-                disabled=owned <= 0
-            ):
-                sell_stock(asset, min(quantity, owned))
-
-        with b3:
-            if st.button(
-                "풀매수",
-                key=f"stock_full_buy_{index}",
-                use_container_width=True
-            ):
-                buy_all(asset)
-
-        with b4:
-            if st.button(
-                "풀매도",
-                key=f"stock_full_sell_{index}",
-                use_container_width=True,
-                disabled=owned <= 0
-            ):
-                sell_all(asset)
-
-
-# ==========================================
-# 19. 하단 정보
-# ==========================================
-
-st.divider()
-
-left, middle, right = st.columns([1.2, 1, 0.8])
-
-with left:
-    st.subheader("다음 턴 시장 뉴스")
-    st.caption("뉴스를 분석한 뒤 다음 턴을 진행하세요. 주가 변동은 다음 턴에 반영됩니다.")
+    st.markdown("### 다음 턴 시장 뉴스")
+    st.caption("뉴스를 분석한 뒤 턴을 진행하세요. 가격 변동은 다음 턴에 반영됩니다.")
     st.info(st.session_state.market_news)
 
-with middle:
-    st.subheader("최근 거래")
-
+    st.markdown("### 최근 거래")
     if st.session_state.history:
-        for item in st.session_state.history[:5]:
+        for item in st.session_state.history[:4]:
             st.caption(item)
     else:
-        st.caption("거래 내역이 없습니다.")
+        st.caption("거래 내역 없음")
 
-with right:
-    st.subheader("게임 진행")
-
-    st.write(
-        f"현재 턴: {st.session_state.turn}/{MAX_TURNS}"
-    )
-
-    if st.button(
-        "다음 턴 진행",
-        type="primary",
-        use_container_width=True
-    ):
+    st.markdown("### 게임 진행")
+    if st.button("다음 턴 진행", type="primary", use_container_width=True):
         next_turn()
-
-    if st.button(
-        "게임 초기화",
-        use_container_width=True
-    ):
+    if st.button("게임 초기화", use_container_width=True):
         initialize_game(st.session_state.starting_cash)
         st.rerun()
 
-
-# ==========================================
-# 20. 가격 변화 그래프
-# ==========================================
-
-with st.expander("가격 변화 그래프 보기", expanded=False):
-    chart_df = pd.DataFrame(
-        st.session_state.price_history
-    )
-
-    st.line_chart(
-        chart_df,
-        height=130
-    )
+# 그래프는 기본 화면 공간을 차지하지 않도록 접어 둠
+with st.expander("가격 변화 그래프", expanded=False):
+    chart_df = pd.DataFrame(st.session_state.price_history)
+    st.line_chart(chart_df, height=120)
